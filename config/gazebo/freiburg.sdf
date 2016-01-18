@@ -1,0 +1,125 @@
+<?xml version="1.0"?>
+<gazebo version="1.0">
+  <world name="default">
+    <include filename="ground_plane.model"/>
+    <scene>
+        <ambient rgba="0.5 0.5 0.5 1"/>
+        <background rgba="0.5 0.5 0.5 1"/>
+        <shadows enabled="false"/>
+    </scene>
+    <physics type="ode">
+        <gravity xyz="0 0 -9.81"/>
+        <ode>
+            <solver type="quick" dt="0.001" iters="10" sor="1.3"/>
+            <constraints cfm="0.0" erp="0.2" contact_max_correcting_vel="10" contact_surface_layer="0.001"/>
+        </ode>
+    </physics>
+    <light type="directional" name="directional_light_1" cast_shadows="false">
+        <origin pose="0 0 30 0.1 0.1 0"/>
+        <diffuse rgba=".5 .5 .5 1"/>
+        <specular rgba=".1 .1 .1 1"/>
+        <attenuation range="300"/>
+        <direction xyz="0.1 0.1 -1"/>
+    </light>
+    <model name="map_mesh" static="true">
+      <link name="map_model_link">
+        <visual name="map_model_visual">
+          <geometry>
+            <mesh filename="/home/andreas/workspace/tidyup_fuerte/tidyup_robot-experimental/tidyup_launch_booth/simulation/map.dae"/>
+          </geometry>
+        </visual>
+        <collision name="map_model_collision">
+          <geometry>
+            <mesh filename="/home/andreas/workspace/tidyup_fuerte/tidyup_robot-experimental/tidyup_launch_booth/simulation/map.dae"/>
+          </geometry>
+        </collision>
+      </link>
+    </model>
+    <!--
+    <model name="cup_0_mesh" static="false">
+      <origin pose="5 1 1 0 0 0"/>
+      <link name="cup_0_model_link">
+        <damping><linear>1.0</linear><angular>1.0</angular></damping>
+        <inertial>
+        <visual name="cup_0_model_visual">
+          <geometry>
+            <mesh filename="china_cup.dae" scale="1 1 1"/>
+          </geometry>
+        </visual>
+        <collision name="cup_0_model_collision" laser_retro="2000">
+          <mass>0.1</mass>
+          <geometry>
+            <mesh filename="china_cup.dae" scale="1 1 1"/>
+          </geometry>
+        </collision>
+      </link>
+    </model>
+    -->
+  <model name='bowl_0' static='0'>
+    <link name='body' gravity='1' self_collide='0' kinematic='0'>
+      <inertial mass='0.100000' density='1.000000'>
+        <inertia ixx='1.000000' ixy='0.000000' ixz='0.000000' iyy='1.000000' iyz='0.000000' izz='1.000000'/>
+      </inertial>
+      <collision name='surface_1' laser_retro='0.000000'>
+        <geometry>
+          <mesh filename='bowl.dae' scale='0.5 0.5 5.0'/>
+        </geometry>
+        <origin pose='0.000000 0.000000 0.000000 0.000000 -0.000000 0.000000'/>
+        <surface>
+          <bounce restitution_coefficient='0.000000' threshold='100000.000000'/>
+          <friction>
+            <ode mu='-1.000000' mu2='-1.000000' fdir1='0.000000 0.000000 0.000000' slip1='0.000000' slip2='0.000000'/>
+          </friction>
+          <contact>
+            <ode soft_cfm='0.000000' soft_erp='0.200000' kp='1000000000000.000000' kd='1.000000' max_vel='100.000000' min_depth='0.001000'/>
+          </contact>
+        </surface>
+      </collision>
+      <visual name='visual1' cast_shadows='1' laser_retro='2000.000000' transparency='0.000000'>
+        <geometry>
+          <mesh filename='bowl.dae' scale='0.5 0.5 5.0'/>
+        </geometry>
+      </visual>
+      <damping>
+        <linear>0.100000</linear>
+        <angular>0.100000</angular>
+      </damping>
+      <origin pose='0.000000 0.000000 0.000000 0.000000 -0.000000 0.000000'/>
+    </link>
+    <origin pose='-0.550000 -3.800000 1.000000 0.000000 -0.000000 0.000000'/>
+  </model>
+  <model name='bowl_1' static='0'>
+    <link name='body' gravity='1' self_collide='0' kinematic='0'>
+      <inertial mass='0.100000' density='1.000000'>
+        <inertia ixx='1.000000' ixy='0.000000' ixz='0.000000' iyy='1.000000' iyz='0.000000' izz='1.000000'/>
+      </inertial>
+      <collision name='surface_1' laser_retro='0.000000'>
+        <geometry>
+          <mesh filename='bowl.dae' scale='0.5 0.5 5.0'/>
+        </geometry>
+        <origin pose='0.000000 0.000000 0.000000 0.000000 -0.000000 0.000000'/>
+        <surface>
+          <bounce restitution_coefficient='0.000000' threshold='100000.000000'/>
+          <friction>
+            <ode mu='-1.000000' mu2='-1.000000' fdir1='0.000000 0.000000 0.000000' slip1='0.000000' slip2='0.000000'/>
+          </friction>
+          <contact>
+            <ode soft_cfm='0.000000' soft_erp='0.200000' kp='1000000000000.000000' kd='1.000000' max_vel='100.000000' min_depth='0.001000'/>
+          </contact>
+        </surface>
+      </collision>
+      <visual name='visual1' cast_shadows='1' laser_retro='2000.000000' transparency='0.000000'>
+        <geometry>
+          <mesh filename='bowl.dae' scale='0.5 0.5 5.0'/>
+        </geometry>
+      </visual>
+      <damping>
+        <linear>0.100000</linear>
+        <angular>0.100000</angular>
+      </damping>
+      <origin pose='0.000000 0.000000 0.000000 0.000000 -0.000000 0.000000'/>
+    </link>
+    <origin pose='-0.550000 -4.100000 1.000000 0.000000 -0.000000 0.000000'/>
+  </model>
+  </world>
+</gazebo>

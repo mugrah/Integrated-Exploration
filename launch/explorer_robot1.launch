@@ -1,0 +1,157 @@
+<launch>
+
+    <param name="robot_description" command="$(find xacro)/xacro.py $(find pioneer3at)/urdf/pioneer3at2.xacro" />
+    <!--<param name="Pioneer3AT/urdf" command="$(find xacro)/xacro.py $(find pioneer3at)/urdf/pioneer3at2.xacro" />-->
+
+    <!--<group ns="robot1">-->
+
+    <!-- **************************** gazebo **************************** -->
+
+        <node pkg="pioneer3at" type="gazebo_bridge" name="Pioneer3AT_Gazebo" >
+            <param name="ros_odom_frame"          type="str"    value="/robot1/odom" />
+            <param name="ros_child_frame"         type="str"    value="/robot1/base_link" />
+            <param name="ros_odom_tf_future_date" type="double" value="0.05" />
+
+            <param name="gz_model_name"     type="str" value="robot1" />
+            <param name="gz_pose_topic"     type="str" value="~/pose/info" />
+            <param name="gz_cmd_vel_topic"  type="str" value="~/robot1/vel_cmd" />
+
+            <remap from="/odom"    to="/robot1/pose" />
+            <remap from="/cmd_vel" to="/robot1/cmd_vel" />
+        </node>
+
+    <!-- **************************** hokuyo **************************** -->
+
+       <node pkg="pioneer3at" type="gazebo_laserscan" name="Pioneer3AT_laserscan" >
+            <param name="ros_laserscan_frame" type="str" value="/robot1/laserscan" />
+            <param name="gz_laserscan_topic" type="str" value="~/robot1/hokuyo/link/laser/scan" />
+
+            <remap from="scan" to="/robot1/laserscan" />
+        </node>
+
+        <!-- publish static transform from the center of the robot to the laser rangefinder (required for slam_gmapping) -->
+        <node pkg="tf" type="static_transform_publisher" name="Pioneer3AT_laserscan_tf" args="0.2 0 0.35 0 0 0 /robot1/base_link /robot1/laserscan 33" />
+
+    <!-- **************************** urdf **************************** -->
+
+       <node pkg="robot_state_publisher" type="state_publisher" name="Pioneer3AT_tf_broadcaster">
+            <!-- <param name="tf_prefix" value="robot1"/> -->
+            <param name="tf_prefix" value="robot1"/>
+            <param name="publish_frequency" type="double" value="20.0"/>
+
+
+
+            <remap from="joint_states" to="/robot1/joint_states"/>
+        </node>
+
+        <node pkg="pioneer3at" type="joint_state_publisher" name="Pioneer3AT_joints_publisher">
+            <param name="tf_future_date" type="double" value="0.05" />
+            <!--<param name="tf_prefix" value="robot1"/>-->
+            <remap from="joint_states" to="/robot1/joint_states"/>
+        </node>
+
+    <!-- **************************** mux_cmdvel **************************** -->
+
+        <node pkg="nodelet" type="nodelet" name="nodelet_manager" args="manager"/>
+        <node pkg="nodelet" type="nodelet" name="cmd_vel_mux" args="load yocs_cmd_vel_mux/CmdVelMuxNodelet nodelet_manager">
+            <remap from="/cmd_vel_mux/output/cmd_vel"           to="/robot1/cmd_vel" />
+
+            <param name="yaml_cfg_file" value="$(find pioneer3at)/config/cmd_vel_robot1.yaml"/>
+        </node>
+
+
+        <!-- <node pkg="pioneer3at" type="mux_cmdvel" name="Pioneer3AT_mux_cmdvel">
+
+            <param name="tf_prefix" value="robot1"/>
+            <remap from="/teleop/cmd_vel"    to="/robot1/teleop/cmd_vel" />
+            <remap from="/move_base/cmd_vel" to="/robot1/move_base/cmd_vel" />
+            <remap from="/cmd_vel"           to="/robot1/cmd_vel" />
+
+        </node> -->
+
+    <!-- **************************** gmapping **************************** -->
+
+       <node pkg="gmapping" type="slam_gmapping" name="Pioneer3AT_gmapping">
+
+            <rosparam file="$(find pioneer3at)/config/gmapping/gmapping_multi.yaml" command="load" />
+            <param name="base_frame" type="str" value="/robot1/base_link" />
+            <param name="map_frame" type="str" value="/robot1/map" />
+            <param name="odom_frame" type="str" value="/robot1/odom" />
+
+            <param name="occ_map_frame_" type="str" value="occ_map" />
+            <remap from="scan"          to="/robot1/laserscan"/>
+            <remap from="map"           to="/robot1/gmapping_map"/>
+            <remap from="map_metadata"  to="/robot1/map_metadata"/>
+            <remap from="occ_map"       to="/robot1/occ_gmapping_map" />
+        </node>
+
+    <!-- **************************** navigation **************************** -->
+
+       <node pkg="move_base" type="move_base" name="Pioneer3AT_move_base">
+
+            <rosparam file="$(find pioneer3at)/config/move_base/move_base_multi.yaml" command="load"/>
+            <rosparam file="$(find pioneer3at)/config/move_base/costmap_common_multi.yaml" command="load" ns="global_costmap" />
+            <rosparam file="$(find pioneer3at)/config/move_base/costmap_common_multi.yaml" command="load" ns="local_costmap" />
+            <rosparam file="$(find pioneer3at)/config/move_base/costmap_global_multi.yaml" command="load"  />
+            <rosparam file="$(find pioneer3at)/config/move_base/costmap_local_multi.yaml" command="load"/>
+
+            <param name="move_base/global_frame_id" type="str" value="/robot1/map" />
+            <param name="global_costmap/global_frame" type="str" value="/robot1/map" />
+            <param name="local_costmap/global_frame" type="str" value="/robot1/map" />
+            <param name="global_costmap/map_topic" type="str" value="/robot1/map" />
+            <param name="local_costmap/map_topic" type="str" value="/robot1/map" />
+            <param name="global_costmap/robot_base_frame" type="str" value="/robot1/base_link" />
+            <param name="global_costmap/laserscan/topic" type="str" value="/robot1/laserscan" />
+            <param name="global_costmap/laserscan/sensor_frame" type="str" value="/robot1/laserscan" />
+            <param name="local_costmap/robot_base_frame" type="str" value="/robot1/base_link" />
+            <param name="local_costmap/laserscan/topic" type="str" value="/robot1/laserscan" />
+            <param name="local_costmap/laserscan/sensor_frame" type="str" value="/robot1/laserscan" />
+
+            <remap from="cmd_vel"               to="/robot1/move_base/cmd_vel"  />
+            <remap from="move_base/cancel"      to="/robot1/move_base/cancel"   />
+            <remap from="move_base/feedback"    to="/robot1/move_base/feedback" />
+            <remap from="move_base/goal"        to="/robot1/move_base/goal" />
+            <remap from="move_base/result"      to="/robot1/move_base/result" />
+            <remap from="move_base/status"      to="/robot1/move_base/status" />
+            <remap from="move_base_simple/goal" to="/robot1/move_base_simple/goal" />
+
+        </node>
+
+
+
+    <!-- **************************** ui **************************** -->
+
+       <node pkg="rviz" type="rviz" name="Pioneer3AT_rviz" args="-d $(find pioneer3at)/config/rviz/settings_robot1.rviz"/>
+
+
+    <!-- **************************** Map Node **************************** -->
+
+      <node pkg="pioneer3at" type="map_node" name="Pioneer3AT_map_node">
+          <param name="map_topic" type="str" value="/robot1/map" />
+          <!-- <param name="gmapping_map_topic" type="str" value="/robot1/gmapping_map" /> -->
+          <param name="occ_map_topic" type="str" value="/robot1/occ_map"/>
+          <param name="occ_gmapping_map_topic" type="str" value="/robot1/occ_gmapping_map"/>
+          <param name="other_map_topic" type="str" value="/robot2/occ_map" />
+          <param name="robots_pose_topic" type="str" value="/robot1/robots_poses" />
+          <param name="other_robot_pose_topic" type="str" value="/robot2/robots_poses" />
+          <param name="signal_topic" type="str" value="/robot1/signal_topic" />
+      </node>
+
+    <!-- **************************** Pioneer **************************** -->
+
+        <node pkg="pioneer3at" type="new_explorer" name="Pioneer3AT_window_explorer" required="true">
+            <param name="robot_topic" type="str" value="robot1" />
+            <param name="goal_topic" type="str" value="/robot1/move_base_simple/goal" />
+            <param name="map_topic" type="str" value="/robot1/map" />
+            <param name="occ_map_topic" type="str" value="/robot1/occ_map" />
+            <param name="pose_topic" type="str" value="/robot1/odom" />
+            <param name="base_link_topic" type="str" value="/robot1/base_link" />
+            <param name="map_merge_topic" type="str" value="/robot1/map_merge_topic" />
+            <param name="other_robot_pose_topic" type="str" value="/robot2/odom" />
+            <param name="robots_poses_topic" type="str" value="/robot1/robots_poses" />
+            <param name="signal_topic" type="str" value="/robot1/signal_topic" />
+            <param name="goal_status_topic" type="str" value="/robot1/move_base/status" />
+        </node>
+
+    <!--</group>-->
+</launch>
