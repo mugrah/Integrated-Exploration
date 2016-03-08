@@ -1,0 +1,13 @@
+<launch>
+
+    <arg name="n1"/>
+    <arg name="n2"/>
+
+    <node pkg="stage_ros" type="stageros" name="stage" output="screen" args="$(find pioneer3at)/world/pioneer3at_1.world" if="$(arg n1)"/>
+    <node pkg="stage_ros" type="stageros" name="stage" output="screen" args="$(find pioneer3at)/world/pioneer3at_2.world" if="$(arg n2)"/>
+
+    <include file="$(find pioneer3at)/launch/stage_launch/robot_1.launch"/>
+    <include file="$(find pioneer3at)/launch/stage_launch/robot_0.launch"/>
+
+
+</launch>

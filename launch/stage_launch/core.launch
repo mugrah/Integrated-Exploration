@@ -1,0 +1,14 @@
+<launch>
+    <arg name="n1" default="1" />
+    <arg name="n2" default="0" />
+
+    <!-- Simulation -->
+    <include file="$(find pioneer3at)/launch/stage_launch/sim.launch">
+        <arg name="n1" value="$(arg n1)" />
+        <arg name="n2" value="$(arg n2)" />
+    </include>
+
+    <!-- Real -->
+    <!--<include file="$(find pioneer3at)/launch/stage_launch/real.launch" />-->
+
+</launch>

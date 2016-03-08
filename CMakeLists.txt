@@ -118,6 +118,9 @@ target_link_libraries(new_explorer_multi  ${catkin_LIBRARIES} )
 add_executable(       unknown_explorer  src/unknown_explorer.cc)
 target_link_libraries(unknown_explorer  ${catkin_LIBRARIES} )
 
+add_executable(       explorer  src/explorer.cc)
+target_link_libraries(explorer  ${catkin_LIBRARIES} )
+
 
 add_executable(       map_node  src/map_node.cc)
 target_link_libraries(map_node  ${catkin_LIBRARIES}
@@ -176,6 +179,7 @@ install(TARGETS joint_state_publisher
                 new_explorer_real_info
                 new_explorer_real_ent
                 map_node_icra
+                explorer
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
