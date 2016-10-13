@@ -34,7 +34,7 @@
             <param name="occ_map_frame_" type="str" value="occ_map" />
 
             <remap from="scan"          to="/robot_0/base_scan"/>
-            <remap from="map"           to="/robot_0/gmapping_map"/>
+            <remap from="map"           to="/robot_0/map"/>
             <remap from="map_metadata"  to="/robot_0/map_metadata"/>
             <remap from="occ_map"       to="/robot_0/occ_gmapping_map" />
         </node>
@@ -81,9 +81,11 @@
         <node pkg="pioneer3at" type="explorer" name="Explorer" required="true">
             <param name="robot_topic" type="str" value="robot_0" />
             <param name="goal_topic" type="str" value="/robot_0/move_base_simple/goal" />
+            <param name="occ_map_topic" type="str" value="/robot_0/occ_gmapping_map" />
             <param name="map_topic" type="str" value="/robot_0/map" />
             <param name="pose_topic" type="str" value="/robot_0/odom" />
             <param name="cmd_vel_topic" type="str" value="/robot_0/cmd_vel" />
+            <param name="laser_topic" type="str" value="/robot_0/base_scan" />
             <param name="base_link_topic" type="str" value="/robot_0/base_link" />
             <param name="goal_status_topic" type="str" value="/robot_0/move_base/status" />
         </node>
