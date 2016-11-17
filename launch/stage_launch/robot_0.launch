@@ -4,20 +4,20 @@
 
         <!-- **************************** tf for Gmapping **************************** -->
 
-         <node pkg="tf" type="static_transform_publisher" name="laserscan_tf" args="0.2 0 0.35 0 0 0 /robot_0/base_link /robot_0/base_scan 33" />
+         <node pkg="tf" type="static_transform_publisher" name="laserscan_tf" args="0.2 0 0.35 0 0 0 /base_link /base_scan 33" />
 
 
         <!-- **************************** cmd_vel_mux **************************** -->
 
         <node pkg="nodelet" type="nodelet" name="nodelet_manager" args="manager"/>
         <node pkg="nodelet" type="nodelet" name="cmd_vel_mux" args="load yocs_cmd_vel_mux/CmdVelMuxNodelet nodelet_manager">
-            <remap from="/cmd_vel_mux/output/cmd_vel"           to="/robot_0/cmd_vel" />
+            <remap from="/cmd_vel_mux/output/cmd_vel"           to="/cmd_vel" />
 
             <param name="yaml_cfg_file" value="$(find pioneer3at)/config/cmd_vel_mux_all.yaml"/>
-            <remap from="/rqt/cmd_vel"           to="/robot_0/rqt/cmd_vel" />
-            <remap from="/ps3joy/cmd_vel"           to="/robot_0/ps3joy/cmd_vel" />
-            <remap from="/move_base/cmd_vel"           to="/robot_0/move_base/cmd_vel" />
-            <remap from="/cmd_vel"           to="/robot_0/cmd_vel" />
+            <remap from="/rqt/cmd_vel"           to="/rqt/cmd_vel" />
+            <remap from="/ps3joy/cmd_vel"           to="/ps3joy/cmd_vel" />
+            <remap from="/move_base/cmd_vel"           to="/move_base/cmd_vel" />
+            <remap from="/cmd_vel"           to="/cmd_vel" />
 
 
         </node>
@@ -28,15 +28,15 @@
         <node pkg="gmapping" type="slam_gmapping" name="gmapping">
 
             <rosparam file="$(find pioneer3at)/config/gmapping/gmapping_multi.yaml" command="load" />
-            <param name="base_frame" type="str" value="/robot_0/base_link" />
-            <param name="map_frame" type="str" value="/robot_0/map" />
-            <param name="odom_frame" type="str" value="/robot_0/odom" />
+            <param name="base_frame" type="str" value="/base_link" />
+            <param name="map_frame" type="str" value="/map" />
+            <param name="odom_frame" type="str" value="/odom" />
             <param name="occ_map_frame_" type="str" value="occ_map" />
 
-            <remap from="scan"          to="/robot_0/base_scan"/>
-            <remap from="map"           to="/robot_0/map"/>
-            <remap from="map_metadata"  to="/robot_0/map_metadata"/>
-            <remap from="occ_map"       to="/robot_0/occ_gmapping_map" />
+            <remap from="scan"          to="/base_scan"/>
+            <remap from="map"           to="/map"/>
+            <remap from="map_metadata"  to="/map_metadata"/>
+            <remap from="occ_map"       to="/occ_gmapping_map" />
         </node>
 
         <!-- **************************** move_base **************************** -->
@@ -49,45 +49,45 @@
             <rosparam file="$(find pioneer3at)/config/move_base/costmap_global_multi.yaml" command="load"  />
             <rosparam file="$(find pioneer3at)/config/move_base/costmap_local_multi.yaml" command="load"/>
 
-            <param name="move_base/global_frame_id" type="str" value="/robot_0/map" />
-            <param name="global_costmap/global_frame" type="str" value="/robot_0/map" />
-            <param name="local_costmap/global_frame" type="str" value="/robot_0/map" />
-            <param name="global_costmap/map_topic" type="str" value="/robot_0/map" />
-            <param name="local_costmap/map_topic" type="str" value="/robot_0/map" />
-            <param name="global_costmap/robot_base_frame" type="str" value="/robot_0/base_link" />
-            <param name="global_costmap/laserscan/topic" type="str" value="/robot_0/base_scan" />
-            <param name="global_costmap/laserscan/sensor_frame" type="str" value="/robot_0/base_scan" />
-            <param name="local_costmap/robot_base_frame" type="str" value="/robot_0/base_link" />
-            <param name="local_costmap/laserscan/topic" type="str" value="/robot_0/base_scan" />
-            <param name="local_costmap/laserscan/sensor_frame" type="str" value="/robot_0/base_scan" />
+            <param name="move_base/global_frame_id" type="str" value="/map" />
+            <param name="global_costmap/global_frame" type="str" value="/map" />
+            <param name="local_costmap/global_frame" type="str" value="/map" />
+            <param name="global_costmap/map_topic" type="str" value="/map" />
+            <param name="local_costmap/map_topic" type="str" value="/map" />
+            <param name="global_costmap/robot_base_frame" type="str" value="/base_link" />
+            <param name="global_costmap/laserscan/topic" type="str" value="/base_scan" />
+            <param name="global_costmap/laserscan/sensor_frame" type="str" value="/base_scan" />
+            <param name="local_costmap/robot_base_frame" type="str" value="/base_link" />
+            <param name="local_costmap/laserscan/topic" type="str" value="/base_scan" />
+            <param name="local_costmap/laserscan/sensor_frame" type="str" value="/base_scan" />
 
-            <remap from="cmd_vel"               to="/robot_0/move_base/cmd_vel"  />
-            <remap from="move_base/cancel"      to="/robot_0/move_base/cancel"   />
-            <remap from="move_base/feedback"    to="/robot_0/move_base/feedback" />
-            <remap from="move_base/goal"        to="/robot_0/move_base/goal" />
-            <remap from="move_base/result"      to="/robot_0/move_base/result" />
-            <remap from="move_base/status"      to="/robot_0/move_base/status" />
-            <remap from="move_base_simple/goal" to="/robot_0/move_base_simple/goal" />
+            <remap from="cmd_vel"               to="/move_base/cmd_vel"  />
+            <remap from="move_base/cancel"      to="/move_base/cancel"   />
+            <remap from="move_base/feedback"    to="/move_base/feedback" />
+            <remap from="move_base/goal"        to="/move_base/goal" />
+            <remap from="move_base/result"      to="/move_base/result" />
+            <remap from="move_base/status"      to="/move_base/status" />
+            <remap from="move_base_simple/goal" to="/move_base_simple/goal" />
 
         </node>
 
         <!-- **************************** rviz **************************** -->
 
-        <node pkg="rviz" type="rviz" name="rviz" args="-d $(find pioneer3at)/config/rviz/robot_0.rviz"/>
+        <!-- <node pkg="rviz" type="rviz" name="rviz" args="-d $(find pioneer3at)/config/rviz/robot_0.rviz"/> -->
 
 
         <!-- **************************** Explorer **************************** -->
 
         <node pkg="pioneer3at" type="explorer" name="Explorer" required="true">
             <param name="robot_topic" type="str" value="robot_0" />
-            <param name="goal_topic" type="str" value="/robot_0/move_base_simple/goal" />
-            <param name="occ_map_topic" type="str" value="/robot_0/occ_gmapping_map" />
-            <param name="map_topic" type="str" value="/robot_0/map" />
-            <param name="pose_topic" type="str" value="/robot_0/odom" />
-            <param name="cmd_vel_topic" type="str" value="/robot_0/cmd_vel" />
-            <param name="laser_topic" type="str" value="/robot_0/base_scan" />
-            <param name="base_link_topic" type="str" value="/robot_0/base_link" />
-            <param name="goal_status_topic" type="str" value="/robot_0/move_base/status" />
+            <param name="goal_topic" type="str" value="/move_base_simple/goal" />
+            <param name="occ_map_topic" type="str" value="/occ_gmapping_map" />
+            <param name="map_topic" type="str" value="/map" />
+            <param name="pose_topic" type="str" value="/odom" />
+            <param name="cmd_vel_topic" type="str" value="/cmd_vel" />
+            <param name="laser_topic" type="str" value="/base_scan" />
+            <param name="base_link_topic" type="str" value="/base_link" />
+            <param name="goal_status_topic" type="str" value="/move_base/status" />
         </node>
 
 

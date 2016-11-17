@@ -73,7 +73,7 @@
 
         <!-- **************************** rviz **************************** -->
 
-        <node pkg="rviz" type="rviz" name="rviz" args="-d $(find pioneer3at)/config/rviz/robot_1.rviz"/>
+        <!--<node pkg="rviz" type="rviz" name="rviz" args="-d $(find pioneer3at)/config/rviz/robot_1.rviz"/>-->
 
 
         <!-- **************************** Explorer **************************** -->

@@ -47,90 +47,62 @@ std::string base_link_topic;
 std::string goal_status_topic;
 std::string laser_topic;
 
+gmapping::occMap r_map;
+nav_msgs::Odometry r_pose;
+geometry_msgs::PoseStamped r_goal;
 
 
 
+/*****************************************
+*                                        *
+*               CALLBACKS                *
+*                                        *
+*****************************************/
 
 
-void ros_set_goal_CallBack(nav_msgs::Odometry odometry)
+void ros_pose_CallBack(nav_msgs::Odometry pose)
 {
+    double y = pose.pose.pose.position.y;
+    double x = pose.pose.pose.position.x;
+    double z = pose.pose.pose.position.z;
+    double qx = pose.pose.pose.orientation.x;
+    double qy = pose.pose.pose.orientation.y;
+    double qz = pose.pose.pose.orientation.z;
+    double qw = pose.pose.pose.orientation.w;
 
-    double y = odometry.pose.pose.position.y;
-    double x = odometry.pose.pose.position.x;
-    double z = odometry.pose.pose.position.z;
-    double qx = odometry.pose.pose.orientation.x;
-    double qy = odometry.pose.pose.orientation.y;
-    double qz = odometry.pose.pose.orientation.z;
-    double qw = odometry.pose.pose.orientation.w;
-    geometry_msgs::PoseStamped goal;
+    double roll, pitch, yaw;
+    tf::Quaternion qm(qx, qy, qz, qw);
+    tf::Matrix3x3 mm(qm);
+    mm.getRPY(roll, pitch, yaw);
 
-    tf::StampedTransform transform;
-    tf::TransformListener listener;
+    std::ofstream myfile;
+    std::string filename = "/home/rcolares/catkin_ws/src/ros-pioneer3at/maps/" + robot_topic +"_pose.txt";
+    myfile.open (filename.c_str(),  std::ios::out | std::ios::app );
+    myfile << x << " " << y << " " << z << " " << roll << " " << pitch << " " << yaw << "\n";
+    myfile.close();
 
-    try{
-        listener.waitForTransform(map_topic, base_link_topic, ros::Time(0), ros::Duration(5.0));
-        listener.lookupTransform(map_topic, base_link_topic, ros::Time(0), transform);
-    }catch (tf::TransformException ex){
-        ROS_ERROR("%s",ex.what());
-    }
-
-
-    goal.header.frame_id = map_topic;
-    goal.header.stamp = ros::Time::now();
-
-    goal.pose.position.x = x+1;
-    goal.pose.position.y = y;
-    goal.pose.position.z = z;
-    goal.pose.orientation.x = qx;
-    goal.pose.orientation.y = qy;
-    goal.pose.orientation.z = qz;
-    goal.pose.orientation.w = qw;
-
-    goal_pub.publish(goal);
-
+    r_pose = pose;
+    //set_new_goal(pose);
 
 }
-
-
-//void ros_laser_Callback(sensor_msgs::LaserScan scan){
-
-//    int min;
-//    double aux = 99.0;
-
-//    geometry_msgs::Twist cmd_vel;
-
-//    cmd_vel.linear.x = 1.0;
-//    cmd_vel.linear.y = 0.0;
-//    cmd_vel.linear.z = 0.0;
-//    cmd_vel.angular.x = 0.0;
-//    cmd_vel.angular.y = 0.0;
-//    cmd_vel.angular.z = 0.0;
-
-//    for(int i = 0; i < scan.ranges.size(); i++){
-//        if(scan.ranges[i] < aux){
-//            min=i;
-//            aux=scan.ranges[i];
-//        }
-//    }
-
-//    if(aux<1.0){
-//        if(min <= scan.ranges.size()/2){
-//            cmd_vel.linear.x = 0.2;
-//            cmd_vel.angular.z = 1.0;
-//        }else{
-//            cmd_vel.linear.x = 0.2;
-//            cmd_vel.angular.z = -1.0;
-//        }
-//    }
-//    cmd_vel_pub.publish(cmd_vel);
-//}
-
 
 void ros_map_Callback(gmapping::occMap map)
 {
-    save_map_simple(map);
+    r_map = map;
+    save_map_simple(map, robot_topic);
+
+    if(!verify_if_goal_is_frontier(r_map, r_goal)){
+        set_new_goal(r_pose);
+    }
+
 }
 
+
+/*****************************************
+*                                        *
+*                  MAIN                  *
+*                                        *
+*****************************************/
 
 
 int main( int argc, char* argv[] )
@@ -163,7 +135,7 @@ int main( int argc, char* argv[] )
     map_sub = n.subscribe(occ_map_topic, 1, ros_map_Callback);
 //    laser_sub = n.subscribe(laser_topic, 1, ros_laser_Callback);
 //    goal_status_sub = n.subscribe(goal_status_topic, 1, ros_goal_status_Callback);
-    pose_sub = n.subscribe(pose_topic, 1, ros_set_goal_CallBack);
+    pose_sub = n.subscribe(pose_topic, 1, ros_pose_CallBack);
 //    cmd_vel_sub = n.subscribe(cmd_vel_topic, 1, ros_set_cmd_vel_CallBack);
 
     ros::spin();
