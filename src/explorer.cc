@@ -26,6 +26,14 @@
 
 #include "save_map.cc"
 
+#include "utils.cc"
+
+
+#define GOAL_NEW_MAP 0
+#define GOAL_NEW_POSE 1
+#define GOAL_PUB 2
+#define GOAL_VERIFY 3
+
 
 ros::Publisher goal_pub;
 ros::Publisher cmd_vel_pub;
@@ -50,6 +58,8 @@ std::string laser_topic;
 gmapping::occMap r_map;
 nav_msgs::Odometry r_pose;
 geometry_msgs::PoseStamped r_goal;
+
+int flowStatus;
 
 
 
@@ -91,6 +101,8 @@ void ros_map_Callback(gmapping::occMap map)
     r_map = map;
     save_map_simple(map, robot_topic);
 
+    if()
+
     if(!verify_if_goal_is_frontier(r_map, r_goal)){
         set_new_goal(r_pose);
     }
@@ -130,13 +142,9 @@ int main( int argc, char* argv[] )
     myfile.close();
 
     goal_pub = n.advertise<geometry_msgs::PoseStamped>(goal_topic, 1);
-//    cmd_vel_pub = n.advertise<geometry_msgs::Twist>(cmd_vel_topic, 1);
 
     map_sub = n.subscribe(occ_map_topic, 1, ros_map_Callback);
-//    laser_sub = n.subscribe(laser_topic, 1, ros_laser_Callback);
-//    goal_status_sub = n.subscribe(goal_status_topic, 1, ros_goal_status_Callback);
     pose_sub = n.subscribe(pose_topic, 1, ros_pose_CallBack);
-//    cmd_vel_sub = n.subscribe(cmd_vel_topic, 1, ros_set_cmd_vel_CallBack);
 
     ros::spin();
 
