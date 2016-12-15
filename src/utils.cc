@@ -1,19 +1,9 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <nav_msgs/OccupancyGrid.h>
 #include <tf/transform_listener.h>
+#include "utils.h"
 
 
-typedef struct mapPose{
-    int x;
-    int y;
-    double yaw;
-}a;
-
-typedef struct odomPose{
-    double x;
-    double y;
-    double yaw;
-}b;
 
 
 odomPose map2odom(mapPose mPose, nav_msgs::MapMetaData_ info, tf::StampedTransform transform){
@@ -26,7 +16,9 @@ odomPose map2odom(mapPose mPose, nav_msgs::MapMetaData_ info, tf::StampedTransfo
 
     oPose.x = ((mPose.x*map_cell)+map_x) - transform.getOrigin().x();
     oPose.y = (((map_height-mPose.y)*map_cell)+map_y) - transform.getOrigin().y();
+
     oPose.yaw = 0.0;
+
     return oPose;
 }
 
@@ -44,6 +36,46 @@ mapPose odom2map(odomPose oPose, nav_msgs::MapMetaData_ info, tf::StampedTransfo
 
 
     return mPose;
+}
+
+
+void saveRawOdom(nav_msgs::Odometry pose){
+
+    double y = pose.pose.pose.position.y;
+    double x = pose.pose.pose.position.x;
+    double z = pose.pose.pose.position.z;
+    double qx = pose.pose.pose.orientation.x;
+    double qy = pose.pose.pose.orientation.y;
+    double qz = pose.pose.pose.orientation.z;
+    double qw = pose.pose.pose.orientation.w;
+
+    double roll, pitch, yaw;
+    tf::Quaternion qm(qx, qy, qz, qw);
+    tf::Matrix3x3 mm(qm);
+    mm.getRPY(roll, pitch, yaw);
+
+    std::ofstream myfile;
+    std::string filename = "/home/rcolares/catkin_ws/src/ros-pioneer3at/maps/" + robot_topic +"_raw_odom.txt";
+    myfile.open (filename.c_str(),  std::ios::out | std::ios::app );
+    myfile << x << " " << y << " " << z << " " << roll << " " << pitch << " " << yaw << "\n";
+    myfile.close();
+
+}
+
+void saveOdomPose(odomPose pose){
+    std::ofstream myfile;
+    std::string filename = "/home/rcolares/catkin_ws/src/ros-pioneer3at/maps/" + robot_topic +"_odom_pose.txt";
+    myfile.open (filename.c_str(),  std::ios::out | std::ios::app );
+    myfile << pose.x << " " << pose.y << " " << pose.yaw << "\n";
+    myfile.close();
+}
+
+void saveMapPose(mapPose pose){
+    std::ofstream myfile;
+    std::string filename = "/home/rcolares/catkin_ws/src/ros-pioneer3at/maps/" + robot_topic +"_map_pose.txt";
+    myfile.open (filename.c_str(),  std::ios::out | std::ios::app );
+    myfile << pose.x << " " << pose.y << " " << pose.yaw << "\n";
+    myfile.close();
 }
 
 

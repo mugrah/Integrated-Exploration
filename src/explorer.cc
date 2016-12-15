@@ -23,16 +23,17 @@
 #include <stdio.h>
 
 #include "gmapping/occMap.h"
+#include "utils.h"
 
 #include "save_map.cc"
 
 #include "utils.cc"
 
 
-#define GOAL_NEW_MAP 0
-#define GOAL_NEW_POSE 1
-#define GOAL_PUB 2
-#define GOAL_VERIFY 3
+#define NEW_MAP 0
+#define NEW_POSE 1
+#define GOAL_SET 2
+
 
 
 ros::Publisher goal_pub;
@@ -57,6 +58,9 @@ std::string laser_topic;
 
 gmapping::occMap r_map;
 nav_msgs::Odometry r_pose;
+mapPose m_pose;
+odomPose o_pose;
+mapPose m_goal;
 geometry_msgs::PoseStamped r_goal;
 
 int flowStatus;
@@ -72,27 +76,32 @@ int flowStatus;
 
 void ros_pose_CallBack(nav_msgs::Odometry pose)
 {
-    double y = pose.pose.pose.position.y;
-    double x = pose.pose.pose.position.x;
-    double z = pose.pose.pose.position.z;
-    double qx = pose.pose.pose.orientation.x;
-    double qy = pose.pose.pose.orientation.y;
-    double qz = pose.pose.pose.orientation.z;
-    double qw = pose.pose.pose.orientation.w;
+    tf::StampedTransform transform;
+    tf::TransformListener listener;
 
-    double roll, pitch, yaw;
-    tf::Quaternion qm(qx, qy, qz, qw);
-    tf::Matrix3x3 mm(qm);
-    mm.getRPY(roll, pitch, yaw);
-
-    std::ofstream myfile;
-    std::string filename = "/home/rcolares/catkin_ws/src/ros-pioneer3at/maps/" + robot_topic +"_pose.txt";
-    myfile.open (filename.c_str(),  std::ios::out | std::ios::app );
-    myfile << x << " " << y << " " << z << " " << roll << " " << pitch << " " << yaw << "\n";
-    myfile.close();
+    try{
+        listener.waitForTransform(map_topic, base_link_topic, ros::Time(0), ros::Duration(5.0));
+        listener.lookupTransform(map_topic, base_link_topic, ros::Time(0), transform);
+    }catch (tf::TransformException ex){
+        ROS_ERROR("%s",ex.what());
+    }
 
     r_pose = pose;
-    //set_new_goal(pose);
+
+    o_pose.x = r_pose.pose.pose.position.x;
+    o_pose.y = r_pose.pose.pose.position.y;
+    o_pose.yaw = r_pose.pose.pose.orientation.z;
+
+    m_pose = odom2map(o_pose, r_map.map.info, transform);
+
+    saveMapPose(m_pose);
+    saveOdomPose(o_pose);
+
+    if(flowStatus == NEW_POSE){
+        m_goal = set_new_goal(r_map, m_pose);
+        flowStatus++;
+    }
+
 
 }
 
@@ -101,10 +110,14 @@ void ros_map_Callback(gmapping::occMap map)
     r_map = map;
     save_map_simple(map, robot_topic);
 
-    if()
+    if(flowStatus == NEW_MAP){
+        flowStatus++;
+    }else if(flowStatus == GOAL_SET){
 
-    if(!verify_if_goal_is_frontier(r_map, r_goal)){
-        set_new_goal(r_pose);
+        if(!verify_if_goal_is_frontier(r_map, r_goal)){
+            r_goal = set_new_goal(r_pose);
+        }
+
     }
 
 }
