@@ -1,3 +1,16 @@
+/************************************
+*           TODO LIST
+*
+*  - set_new_goal
+*    - adapt information function
+*    - adapt distance function
+*
+*  - define detection procedure
+*
+*  - define map exchange method
+*
+************************************/
+
 #include <ros/ros.h>
 #include <geometry_msgs/Twist.h>
 #include <geometry_msgs/PoseStamped.h>
