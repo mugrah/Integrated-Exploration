@@ -6,7 +6,7 @@
 
 
 
-odomPose map2odom(mapPose mPose, nav_msgs::MapMetaData_ info, tf::StampedTransform transform){
+odomPose map2odom(mapPose mPose, nav_msgs::MapMetaData info, tf::StampedTransform transform){
     odomPose oPose;
 
     double map_cell = info.resolution;
@@ -22,7 +22,7 @@ odomPose map2odom(mapPose mPose, nav_msgs::MapMetaData_ info, tf::StampedTransfo
     return oPose;
 }
 
-mapPose odom2map(odomPose oPose, nav_msgs::MapMetaData_ info, tf::StampedTransform transform){
+mapPose odom2map(odomPose oPose, nav_msgs::MapMetaData info, tf::StampedTransform transform){
     mapPose mPose;
 
     double map_cell = info.resolution;
@@ -39,7 +39,7 @@ mapPose odom2map(odomPose oPose, nav_msgs::MapMetaData_ info, tf::StampedTransfo
 }
 
 
-void saveRawOdom(nav_msgs::Odometry pose){
+void saveRawOdom(nav_msgs::Odometry pose, std::string robot_topic){
 
     double y = pose.pose.pose.position.y;
     double x = pose.pose.pose.position.x;
@@ -62,7 +62,7 @@ void saveRawOdom(nav_msgs::Odometry pose){
 
 }
 
-void saveOdomPose(odomPose pose){
+void saveOdomPose(odomPose pose, std::string robot_topic){
     std::ofstream myfile;
     std::string filename = "/home/rcolares/catkin_ws/src/ros-pioneer3at/maps/" + robot_topic +"_odom_pose.txt";
     myfile.open (filename.c_str(),  std::ios::out | std::ios::app );
@@ -70,7 +70,7 @@ void saveOdomPose(odomPose pose){
     myfile.close();
 }
 
-void saveMapPose(mapPose pose){
+void saveMapPose(mapPose pose, std::string robot_topic){
     std::ofstream myfile;
     std::string filename = "/home/rcolares/catkin_ws/src/ros-pioneer3at/maps/" + robot_topic +"_map_pose.txt";
     myfile.open (filename.c_str(),  std::ios::out | std::ios::app );

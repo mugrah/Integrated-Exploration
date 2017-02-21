@@ -16,10 +16,10 @@ std::vector<double> wavefront(gmapping::occMap map, mapPose m_pose, double *max)
 
     aux=map.data;
 
-    for_each(aux.data.begin(), aux.data.end(), start_map);
+    for_each(aux.begin(), aux.end(), start_map);
 
     unsigned int ir = m_pose.x + (height - m_pose.y - 1) * width;
-    aux.data[ir] = 0;
+    aux[ir] = 0;
 
 
     int changes = 1;
@@ -32,69 +32,69 @@ std::vector<double> wavefront(gmapping::occMap map, mapPose m_pose, double *max)
             for(unsigned int x = 1; x < width; x++) {
 
                 ic = x + (height - y - 1) * width;
-                if(aux.data[i] != MAP_FREE && aux.data[i] != -1){
+                if(aux[i] != MAP_FREE && aux[i] != -1){
 
                     it = x-1 + (height - y-1 - 1) * width;
-                    if(aux.data[it]==MAP_FREE){
-                        aux.data[it]=aux.data[ic]+1;
-                        if(aux.data[it]>max)
-                            max = aux.data[it];
+                    if(aux[it]==MAP_FREE){
+                        aux[it]=aux[ic]+1;
+                        if(aux[it]>max)
+                            max = aux[it];
                         changes = 1;
                     }
 
                     it = x-1 + (height - y - 1) * width;
-                    if(aux.data[it]==MAP_FREE){
-                        aux.data[it]=aux.data[ic]+1;
-                        if(aux.data[it]>max)
-                            max = aux.data[it];
+                    if(aux[it]==MAP_FREE){
+                        aux[it]=aux[ic]+1;
+                        if(aux[it]>max)
+                            max = aux[it];
                         changes = 1;
                     }
 
                     it = x-1 + (height - y+1 - 1) * width;
-                    if(aux.data[it]==MAP_FREE){
-                        aux.data[it]=aux.data[ic]+1;
-                        if(aux.data[it]>max)
-                            max = aux.data[it];
+                    if(aux[it]==MAP_FREE){
+                        aux[it]=aux[ic]+1;
+                        if(aux[it]>max)
+                            max = aux[it];
                         changes = 1;
                     }
 
                     it = x + (height - y-1 - 1) * width;
-                    if(aux.data[it]==MAP_FREE){
-                        aux.data[it]=aux.data[ic]+1;
-                        if(aux.data[it]>max)
-                            max = aux.data[it];
+                    if(aux[it]==MAP_FREE){
+                        aux[it]=aux[ic]+1;
+                        if(aux[it]>max)
+                            max = aux[it];
                         changes = 1;
                     }
 
                     it = x + (height - y+1 - 1) * width;
-                    if(aux.data[it]==MAP_FREE){
-                        aux.data[it]=aux.data[ic]+1;
-                        if(aux.data[it]>max)
-                            max = aux.data[it];
+                    if(aux[it]==MAP_FREE){
+                        aux[it]=aux[ic]+1;
+                        if(aux[it]>max)
+                            max = aux[it];
                         changes = 1;
                     }
 
                     it = x+1 + (height - y-1 - 1) * width;
-                    if(aux.data[it]==MAP_FREE){
-                        aux.data[it]=aux.data[ic]+1;
-                        if(aux.data[it]>max)
-                            max = aux.data[it];
+                    if(aux[it]==MAP_FREE){
+                        aux[it]=aux[ic]+1;
+                        if(aux[it]>max)
+                            max = aux[it];
                         changes = 1;
                     }
 
                     it = x+1 + (height - y - 1) * width;
-                    if(aux.data[it]==MAP_FREE){
-                        aux.data[it]=aux.data[ic]+1;
-                        if(aux.data[it]>max)
-                            max = aux.data[it];
+                    if(aux[it]==MAP_FREE){
+                        aux[it]=aux[ic]+1;
+                        if(aux[it]>max)
+                            max = aux[it];
                         changes = 1;
                     }
 
                     it = x+1 + (height - y+1 - 1) * width;
-                    if(aux.data[it]==MAP_FREE){
-                        aux.data[it]=aux.data[ic]+1;
-                        if(aux.data[it]>max)
-                            max = aux.data[it];
+                    if(aux[it]==MAP_FREE){
+                        aux[it]=aux[ic]+1;
+                        if(aux[it]>max)
+                            max = aux[it];
                         changes = 1;
                     }
 
@@ -107,69 +107,69 @@ std::vector<double> wavefront(gmapping::occMap map, mapPose m_pose, double *max)
             for(unsigned int x = width-1; x >=0 ; x--) {
 
                 ic = x + (height - y - 1) * width;
-                if(aux.data[i] != MAP_FREE && aux.data[i] != -1){
+                if(aux[i] != MAP_FREE && aux[i] != -1){
 
                     it = x-1 + (height - y-1 - 1) * width;
-                    if(aux.data[it]==MAP_FREE){
-                        aux.data[it]=aux.data[ic]+1;
-                        if(aux.data[it]>max)
-                            max = aux.data[it];
+                    if(aux[it]==MAP_FREE){
+                        aux[it]=aux[ic]+1;
+                        if(aux[it]>max)
+                            max = aux[it];
                         changes = 1;
                     }
 
                     it = x-1 + (height - y - 1) * width;
-                    if(aux.data[it]==MAP_FREE){
-                        aux.data[it]=aux.data[ic]+1;
-                        if(aux.data[it]>max)
-                            max = aux.data[it];
+                    if(aux[it]==MAP_FREE){
+                        aux[it]=aux[ic]+1;
+                        if(aux[it]>max)
+                            max = aux[it];
                         changes = 1;
                     }
 
                     it = x-1 + (height - y+1 - 1) * width;
-                    if(aux.data[it]==MAP_FREE){
-                        aux.data[it]=aux.data[ic]+1;
-                        if(aux.data[it]>max)
-                            max = aux.data[it];
+                    if(aux[it]==MAP_FREE){
+                        aux[it]=aux[ic]+1;
+                        if(aux[it]>max)
+                            max = aux[it];
                         changes = 1;
                     }
 
                     it = x + (height - y-1 - 1) * width;
-                    if(aux.data[it]==MAP_FREE){
-                        aux.data[it]=aux.data[ic]+1;
-                        if(aux.data[it]>max)
-                            max = aux.data[it];
+                    if(aux[it]==MAP_FREE){
+                        aux[it]=aux[ic]+1;
+                        if(aux[it]>max)
+                            max = aux[it];
                         changes = 1;
                     }
 
                     it = x + (height - y+1 - 1) * width;
-                    if(aux.data[it]==MAP_FREE){
-                        aux.data[it]=aux.data[ic]+1;
-                        if(aux.data[it]>max)
-                            max = aux.data[it];
+                    if(aux[it]==MAP_FREE){
+                        aux[it]=aux[ic]+1;
+                        if(aux[it]>max)
+                            max = aux[it];
                         changes = 1;
                     }
 
                     it = x+1 + (height - y-1 - 1) * width;
-                    if(aux.data[it]==MAP_FREE){
-                        aux.data[it]=aux.data[ic]+1;
-                        if(aux.data[it]>max)
-                            max = aux.data[it];
+                    if(aux[it]==MAP_FREE){
+                        aux[it]=aux[ic]+1;
+                        if(aux[it]>max)
+                            max = aux[it];
                         changes = 1;
                     }
 
                     it = x+1 + (height - y - 1) * width;
-                    if(aux.data[it]==MAP_FREE){
-                        aux.data[it]=aux.data[ic]+1;
-                        if(aux.data[it]>max)
-                            max = aux.data[it];
+                    if(aux[it]==MAP_FREE){
+                        aux[it]=aux[ic]+1;
+                        if(aux[it]>max)
+                            max = aux[it];
                         changes = 1;
                     }
 
                     it = x+1 + (height - y+1 - 1) * width;
-                    if(aux.data[it]==MAP_FREE){
-                        aux.data[it]=aux.data[ic]+1;
-                        if(aux.data[it]>max)
-                            max = aux.data[it];
+                    if(aux[it]==MAP_FREE){
+                        aux[it]=aux[ic]+1;
+                        if(aux[it]>max)
+                            max = aux[it];
                         changes = 1;
                     }
 
@@ -196,8 +196,10 @@ std::vector<double> calculate_cost_map(gmapping::occMap map, mapPose m_pose){
     for(unsigned int y = 0; y < height; y++) {
         for(unsigned int x = 0; x < width; x++) {
             unsigned int i = x + (height - y - 1) * width;
-            if(wave.data[i]!=MAP_FREE && wave.data[i]!=-1)
-                norm_wave.data[i] = wave.data[i]/max;
+            if(wave[i]!=MAP_FREE && wave[i]!=-1)
+                norm_wave[i] = wave[i]/max;
+            else
+                norm_wave[i] = -1.0;
         }
     }
 

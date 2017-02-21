@@ -42,6 +42,8 @@
 
 #include "utils.cc"
 
+#include "goal_tools.cc"
+
 
 #define NEW_MAP 0
 #define NEW_POSE 1
@@ -69,12 +71,18 @@ std::string base_link_topic;
 std::string goal_status_topic;
 std::string laser_topic;
 
+double alpha;
+double beta;
+double gama;
+double a_beta;
+double b_beta;
+
 gmapping::occMap r_map;
 nav_msgs::Odometry r_pose;
 mapPose m_pose;
 odomPose o_pose;
 mapPose m_goal;
-geometry_msgs::PoseStamped r_goal;
+
 
 int flowStatus;
 
@@ -111,7 +119,7 @@ void ros_pose_CallBack(nav_msgs::Odometry pose)
     saveOdomPose(o_pose);
 
     if(flowStatus == NEW_POSE){
-        m_goal = set_new_goal(r_map, m_pose);
+        m_goal = setNewGoal(goal_pub, r_map, pose, m_pose, transform, a_beta, b_beta, alpha, beta, gama);
         flowStatus++;
     }
 
@@ -127,9 +135,9 @@ void ros_map_Callback(gmapping::occMap map)
         flowStatus++;
     }else if(flowStatus == GOAL_SET){
 
-        if(!verify_if_goal_is_frontier(r_map, r_goal)){
-            r_goal = set_new_goal(r_pose);
-        }
+        //if(!verify_if_goal_is_frontier(r_map, r_goal)){
+            //r_goal = setNewGoal(r_pose, a_beta, b_beta, alpha, beta, gama);
+        //}
 
     }
 
@@ -159,7 +167,11 @@ int main( int argc, char* argv[] )
     n_.getParam("goal_status_topic", goal_status_topic);
     n_.getParam("robot_topic", robot_topic);
     n_.getParam("base_link_topic", base_link_topic);
-
+    n_.getParam("a_beta", a_beta);
+    n_.getParam("b_beta", b_beta);
+    n_.getParam("alpha", alpha);
+    n_.getParam("beta", beta);
+    n_.getParam("gama", gama);
 
     std::ofstream myfile;
     std::string filename = "/home/rcolares/catkin_ws/src/ros-pioneer3at/maps/time_"+robot_topic+".txt";
