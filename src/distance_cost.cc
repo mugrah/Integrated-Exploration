@@ -10,9 +10,12 @@ void start_map(double & i){
         i=-1;
 }
 
-std::vector<double> wavefront(gmapping::occMap map, mapPose m_pose, double *max){
+std::vector<double> wavefront(gmapping::occMap map, mapPose m_pose, double &max){
 
     std::vector<double>  aux;
+
+    int height = map.map.info.height;
+    int width = map.map.info.width;
 
     aux=map.data;
 
@@ -32,7 +35,7 @@ std::vector<double> wavefront(gmapping::occMap map, mapPose m_pose, double *max)
             for(unsigned int x = 1; x < width; x++) {
 
                 ic = x + (height - y - 1) * width;
-                if(aux[i] != MAP_FREE && aux[i] != -1){
+                if(aux[ic] != MAP_FREE && aux[ic] != -1){
 
                     it = x-1 + (height - y-1 - 1) * width;
                     if(aux[it]==MAP_FREE){
@@ -107,7 +110,7 @@ std::vector<double> wavefront(gmapping::occMap map, mapPose m_pose, double *max)
             for(unsigned int x = width-1; x >=0 ; x--) {
 
                 ic = x + (height - y - 1) * width;
-                if(aux[i] != MAP_FREE && aux[i] != -1){
+                if(aux[ic] != MAP_FREE && aux[ic] != -1){
 
                     it = x-1 + (height - y-1 - 1) * width;
                     if(aux[it]==MAP_FREE){

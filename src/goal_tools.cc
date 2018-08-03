@@ -11,7 +11,7 @@ std::vector<double> infGain;
 std::vector<double> coordCost;
 std::vector<double> uFunction;
 
-int utilityFunction(int a_beta, int b_beta, double alpha, double beta, double gama){
+int utilityFunction(int height, int width, int a_beta, int b_beta, double alpha, double beta, double gama){
 
     double max=0.0;
     int max_i;
@@ -24,7 +24,7 @@ int utilityFunction(int a_beta, int b_beta, double alpha, double beta, double ga
 
             uFunction[i] = beta*distCost[i] /*+ alpha*infGain[i] + gama*coordCost[i]*/;
             if(uFunction[i]>max){
-                max=uFunction;
+                max=uFunction[i];
                 max_i = i;
             }
 
@@ -47,7 +47,7 @@ void publishGoal(ros::Publisher goal_pub, nav_msgs::Odometry pose, int maxUtilit
     int yGoalMap = maxUtility/map.map.info.height;
     int xGoalMap = maxUtility - yGoalMap*map.map.info.height;
 
-    r_goal.header.frame_id = map_topic;
+    r_goal.header.frame_id = map.map.header.frame_id;
     r_goal.header.stamp = ros::Time::now();
 
     r_goal.pose.position.x = ((xGoalMap*map.map.info.resolution)+map.map.info.origin.position.x) - transform.getOrigin().x();
@@ -64,13 +64,16 @@ void publishGoal(ros::Publisher goal_pub, nav_msgs::Odometry pose, int maxUtilit
 
 mapPose setNewGoal(ros::Publisher goal_pub, gmapping::occMap map, nav_msgs::Odometry pose, mapPose m_pose, tf::StampedTransform transform, int a_beta, int b_beta, double alpha, double beta, double gama){
 
+    int height = map.map.info.height;
+    int width = map.map.info.width;
+
     int maxUtility;
     mapPose m_goal;
 
     distCost = calculate_cost_map(map, m_pose);
 //    infGain = calculate_inf_map(map, m_pose);
 //    coordCost = calculate_coord_map(map, m_pose);
-    maxUtility = utilityFunction(a_beta, b_beta, alpha, beta, gama);
+    maxUtility = utilityFunction(height, width, a_beta, b_beta, alpha, beta, gama);
     publishGoal(pose, maxUtility, map, transform);
 
     return m_goal;
