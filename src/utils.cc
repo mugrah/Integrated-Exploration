@@ -22,7 +22,7 @@ odomPose map2odom(mapPose mPose, nav_msgs::MapMetaData info, tf::StampedTransfor
     return oPose;
 }
 
-mapPose odom2map(odomPose oPose, nav_msgs::MapMetaData info, tf::StampedTransform transform){
+mapPose odom2map(odomPose oPose, nav_msgs::MapMetaData info, tf::StampedTransform *transform){
     mapPose mPose;
 
     double map_cell = info.resolution;
@@ -30,10 +30,9 @@ mapPose odom2map(odomPose oPose, nav_msgs::MapMetaData info, tf::StampedTransfor
     double map_y = info.origin.position.y;
     double map_height = info.height;
 
-    mPose.x = (map_x - oPose.x - transform.getOrigin().x())/map_cell;
-    mPose.y = map_height - (oPose.y + transform.getOrigin().y() - map_y)/map_cell;
+    mPose.x = (oPose.x - map_x - transform->getOrigin().x())/map_cell;
+    mPose.y = map_height - (oPose.y + transform->getOrigin().y() - map_y)/map_cell;
     mPose.yaw = 0.0;
-
 
     return mPose;
 }

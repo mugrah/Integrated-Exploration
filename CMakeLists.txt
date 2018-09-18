@@ -61,20 +61,20 @@ include_directories(${catkin_INCLUDE_DIRS})
 add_executable(       joint_state_publisher src/joint_state_publisher.cc)
 target_link_libraries(joint_state_publisher ${catkin_LIBRARIES} )
 
-add_executable(       gazebo_bridge     src/gazebo_bridge.cc)
-target_link_libraries(gazebo_bridge     ${catkin_LIBRARIES} 
-                                        ${GAZEBO_LIBRARIES} 
-                                        ${Boost_LIBRARIES} 
-                                        ${PROTOBUF_LIBRARIES})
+# add_executable(       gazebo_bridge     src/gazebo_bridge.cc)
+# target_link_libraries(gazebo_bridge     ${catkin_LIBRARIES} 
+#                                        ${GAZEBO_LIBRARIES} 
+#                                        ${Boost_LIBRARIES} 
+#                                        ${PROTOBUF_LIBRARIES})
                                     
-add_executable(       gazebo_laserscan  src/gazebo_laserscan.cc)
-target_link_libraries(gazebo_laserscan  ${catkin_LIBRARIES} 
-                                        ${GAZEBO_LIBRARIES} 
-                                        ${Boost_LIBRARIES} 
-                                        ${PROTOBUF_LIBRARIES})
+#add_executable(       gazebo_laserscan  src/gazebo_laserscan.cc)
+#target_link_libraries(gazebo_laserscan  ${catkin_LIBRARIES} 
+#                                        ${GAZEBO_LIBRARIES} 
+#                                        ${Boost_LIBRARIES} 
+#                                        ${PROTOBUF_LIBRARIES})
 
-add_executable(       frontier_explorer  src/frontier_explorer.cc)
-target_link_libraries(frontier_explorer  ${catkin_LIBRARIES} )
+#add_executable(       frontier_explorer  src/frontier_explorer.cc)
+#target_link_libraries(frontier_explorer  ${catkin_LIBRARIES} )
 
 add_executable(       print_coords  src/print_coords.cc)
 target_link_libraries(print_coords  ${catkin_LIBRARIES}
@@ -84,41 +84,41 @@ add_executable(       laserscan  src/laserscan.cc)
 target_link_libraries(laserscan  ${catkin_LIBRARIES}
                                 ${OpenCV_LIBRARIES})
 
-add_executable(       frontier_window_explorer  src/frontier_window_explorer.cc)
-target_link_libraries(frontier_window_explorer  ${catkin_LIBRARIES} )
+#add_executable(       frontier_window_explorer  src/frontier_window_explorer.cc)
+#target_link_libraries(frontier_window_explorer  ${catkin_LIBRARIES} )
 
-add_executable(       multi_frontier_explorer  src/multi_frontier_explorer.cc)
-target_link_libraries(multi_frontier_explorer  ${catkin_LIBRARIES} )
+#add_executable(       multi_frontier_explorer  src/multi_frontier_explorer.cc)
+#target_link_libraries(multi_frontier_explorer  ${catkin_LIBRARIES} )
 
-add_executable(       multi_window_explorer  src/multi_window_explorer.cc)
-target_link_libraries(multi_window_explorer  ${catkin_LIBRARIES} )
+#add_executable(       multi_window_explorer  src/multi_window_explorer.cc)
+#target_link_libraries(multi_window_explorer  ${catkin_LIBRARIES} )
 
-add_executable(       multi_window_explorer_real  src/multi_window_explorer_real.cc)
-target_link_libraries(multi_window_explorer_real  ${catkin_LIBRARIES} )
+#add_executable(       multi_window_explorer_real  src/multi_window_explorer_real.cc)
+#target_link_libraries(multi_window_explorer_real  ${catkin_LIBRARIES} )
 
-add_executable(       minpos_explorer  src/minpos_explorer.cc)
-target_link_libraries(minpos_explorer  ${catkin_LIBRARIES} )
+#add_executable(       minpos_explorer  src/minpos_explorer.cc)
+#target_link_libraries(minpos_explorer  ${catkin_LIBRARIES} )
 
-add_executable(       new_explorer  src/new_explorer.cc)
-target_link_libraries(new_explorer  ${catkin_LIBRARIES} )
+#add_executable(       new_explorer  src/new_explorer.cc)
+#target_link_libraries(new_explorer  ${catkin_LIBRARIES} )
 
-add_executable(       new_explorer_ent  src/new_explorer_ent.cc)
-target_link_libraries(new_explorer_ent  ${catkin_LIBRARIES} )
+#add_executable(       new_explorer_ent  src/new_explorer_ent.cc)
+#target_link_libraries(new_explorer_ent  ${catkin_LIBRARIES} )
 
-add_executable(       new_explorer_inf  src/new_explorer_inf.cc)
-target_link_libraries(new_explorer_inf  ${catkin_LIBRARIES} )
+#add_executable(       new_explorer_inf  src/new_explorer_inf.cc)
+#target_link_libraries(new_explorer_inf  ${catkin_LIBRARIES} )
 
-add_executable(       new_explorer_real_info  src/new_explorer_real_info.cc)
-target_link_libraries(new_explorer_real_info  ${catkin_LIBRARIES} )
+#add_executable(       new_explorer_real_info  src/new_explorer_real_info.cc)
+#target_link_libraries(new_explorer_real_info  ${catkin_LIBRARIES} )
 
-add_executable(       new_explorer_real_ent  src/new_explorer_real_ent.cc)
-target_link_libraries(new_explorer_real_ent  ${catkin_LIBRARIES} )
+#add_executable(       new_explorer_real_ent  src/new_explorer_real_ent.cc)
+#target_link_libraries(new_explorer_real_ent  ${catkin_LIBRARIES} )
 
-add_executable(       new_explorer_multi  src/new_explorer_multi.cc)
-target_link_libraries(new_explorer_multi  ${catkin_LIBRARIES} )
+#add_executable(       new_explorer_multi  src/new_explorer_multi.cc)
+#target_link_libraries(new_explorer_multi  ${catkin_LIBRARIES} )
 
-add_executable(       unknown_explorer  src/unknown_explorer.cc)
-target_link_libraries(unknown_explorer  ${catkin_LIBRARIES} )
+#add_executable(       unknown_explorer  src/unknown_explorer.cc)
+#target_link_libraries(unknown_explorer  ${catkin_LIBRARIES} )
 
 add_executable(       explorer  src/explorer.cc)
 target_link_libraries(explorer  ${catkin_LIBRARIES} )
@@ -151,7 +151,7 @@ target_link_libraries(image_save  ${catkin_LIBRARIES}
 #############
 install(PROGRAMS  scripts/init_amcl
                   scripts/teleop_joy
-                  scripts/gazebo_p3at
+#                  scripts/gazebo_p3at
                   scripts/proto/__init__.py
                   scripts/proto/header.py
                   scripts/proto/packet.py
@@ -165,22 +165,22 @@ install(PROGRAMS  scripts/init_amcl
 
 ## Mark executables and/or libraries for installation
 install(TARGETS joint_state_publisher
-                gazebo_bridge
-                gazebo_laserscan
-                frontier_explorer
+#                gazebo_bridge
+#                gazebo_laserscan
+#                frontier_explorer
                 print_coords
                 laserscan
-                multi_frontier_explorer
-                frontier_window_explorer
+#                multi_frontier_explorer
+#                frontier_window_explorer
                 map_node
                 image_save
-                minpos_explorer
-                new_explorer
-                new_explorer_ent
-                new_explorer_inf
-                new_explorer_real_info
-                new_explorer_real_ent
-                map_node_icra
+#                minpos_explorer
+#                new_explorer
+#                new_explorer_ent
+#                new_explorer_inf
+#                new_explorer_real_info
+#                new_explorer_real_ent
+#                map_node_icra
                 explorer
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

@@ -46,7 +46,7 @@
 
 
 #define NEW_MAP 0
-#define NEW_POSE 1
+#define SET_NEW_GOAL 1
 #define GOAL_SET 2
 
 
@@ -113,13 +113,14 @@ void ros_pose_CallBack(nav_msgs::Odometry pose)
     o_pose.y = r_pose.pose.pose.position.y;
     o_pose.yaw = r_pose.pose.pose.orientation.z;
 
-    m_pose = odom2map(o_pose, r_map.map.info, transform);
+    m_pose = odom2map(o_pose, r_map.map.info, &transform);
 
-    saveMapPose(m_pose);
-    saveOdomPose(o_pose);
+    saveMapPose(m_pose, robot_topic);
+    saveOdomPose(o_pose, robot_topic);
 
-    if(flowStatus == NEW_POSE){
-        m_goal = setNewGoal(goal_pub, r_map, pose, m_pose, transform, a_beta, b_beta, alpha, beta, gama);
+    if(flowStatus == SET_NEW_GOAL){
+        save_map_pose(r_map, m_pose, robot_topic);
+        m_goal = setNewGoal(goal_pub, r_map, pose, m_pose, &transform, a_beta, b_beta, alpha, beta, gama);
         flowStatus++;
     }
 
@@ -133,11 +134,11 @@ void ros_map_Callback(gmapping::occMap map)
 
     if(flowStatus == NEW_MAP){
         flowStatus++;
-    }else if(flowStatus == GOAL_SET){
-
-        //if(!verify_if_goal_is_frontier(r_map, r_goal)){
-            //r_goal = setNewGoal(r_pose, a_beta, b_beta, alpha, beta, gama);
-        //}
+    } else if (flowStatus == GOAL_SET) {
+        if(!verify_if_goal_is_frontier(r_map, m_goal)){
+            ROS_ERROR_STREAM("NOT FRONTIER");
+            flowStatus = SET_NEW_GOAL;
+        }
 
     }
 
@@ -173,15 +174,12 @@ int main( int argc, char* argv[] )
     n_.getParam("beta", beta);
     n_.getParam("gama", gama);
 
-    std::ofstream myfile;
-    std::string filename = "/home/rcolares/catkin_ws/src/ros-pioneer3at/maps/time_"+robot_topic+".txt";
-    myfile.open (filename.c_str(),  std::ios::out | std::ios::app );
-    myfile << ros::Time::now()<<"\n";
-    myfile.close();
+    flowStatus = NEW_MAP;
 
     goal_pub = n.advertise<geometry_msgs::PoseStamped>(goal_topic, 1);
 
     map_sub = n.subscribe(occ_map_topic, 1, ros_map_Callback);
+
     pose_sub = n.subscribe(pose_topic, 1, ros_pose_CallBack);
 
     ros::spin();

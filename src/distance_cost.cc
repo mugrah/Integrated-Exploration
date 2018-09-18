@@ -1,13 +1,13 @@
 #include "gmapping/occMap.h"
 #include "utils.h"
 
-#define MAP_FREE 99999
+#define MAP_FREE 99999.0
 
 void start_map(double & i){
-    if(i>=0.0)
+    if(i == 0.0)
         i=MAP_FREE;
     else
-        i=-1;
+        i=-1.0;
 }
 
 std::vector<double> wavefront(gmapping::occMap map, mapPose m_pose, double &max){
@@ -18,24 +18,28 @@ std::vector<double> wavefront(gmapping::occMap map, mapPose m_pose, double &max)
     int width = map.map.info.width;
 
     aux=map.data;
-
     for_each(aux.begin(), aux.end(), start_map);
 
-    unsigned int ir = m_pose.x + (height - m_pose.y - 1) * width;
-    aux[ir] = 0;
-
-
+    unsigned int ir;
+    for(unsigned int y = m_pose.y - 5; y <= m_pose.y + 5; y++){
+        for(unsigned int x = m_pose.x -5; x <= m_pose.x +5; x++){
+            ir = x + (height - y - 1) * width;
+            if(aux[ir] == MAP_FREE){
+                aux[ir] = 0.0;
+            }
+        }
+    }
+    
     int changes = 1;
     unsigned int ic,it;
     max = 0;
-
     while(changes){
         changes = 0;
         for(unsigned int y = 1; y < height; y++) {
             for(unsigned int x = 1; x < width; x++) {
 
                 ic = x + (height - y - 1) * width;
-                if(aux[ic] != MAP_FREE && aux[ic] != -1){
+                if(aux[ic] != MAP_FREE && aux[ic] != -1.0){
 
                     it = x-1 + (height - y-1 - 1) * width;
                     if(aux[it]==MAP_FREE){
@@ -102,15 +106,13 @@ std::vector<double> wavefront(gmapping::occMap map, mapPose m_pose, double &max)
                     }
 
                 }
-
             }
         }
-
-        for(unsigned int y = height-1; y >= 0; y--) {
-            for(unsigned int x = width-1; x >=0 ; x--) {
+        for(unsigned int y = height-1; y > 0; y--) {
+            for(unsigned int x = width-1; x >0 ; x--) {
 
                 ic = x + (height - y - 1) * width;
-                if(aux[ic] != MAP_FREE && aux[ic] != -1){
+                if(aux[ic] != MAP_FREE && aux[ic] != -1.0){
 
                     it = x-1 + (height - y-1 - 1) * width;
                     if(aux[it]==MAP_FREE){
@@ -191,11 +193,9 @@ std::vector<double> calculate_cost_map(gmapping::occMap map, mapPose m_pose){
     int width = map.map.info.width;
 
     double max;
-
     std::vector<double> wave = wavefront(map, m_pose, max);
     std::vector<double> norm_wave;
     norm_wave.assign(wave.size(), 0.0);
-
     for(unsigned int y = 0; y < height; y++) {
         for(unsigned int x = 0; x < width; x++) {
             unsigned int i = x + (height - y - 1) * width;
@@ -205,6 +205,5 @@ std::vector<double> calculate_cost_map(gmapping::occMap map, mapPose m_pose){
                 norm_wave[i] = -1.0;
         }
     }
-
     return norm_wave;
 }

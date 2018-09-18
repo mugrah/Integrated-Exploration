@@ -73,12 +73,12 @@
 
         <!-- **************************** rviz **************************** -->
 
-        <!-- <node pkg="rviz" type="rviz" name="rviz" args="-d $(find pioneer3at)/config/rviz/robot_0.rviz"/> -->
+        <node pkg="rviz" type="rviz" name="rviz" args="-d $(find pioneer3at)/config/rviz/robot_0.rviz"/>
 
 
         <!-- **************************** Explorer **************************** -->
 
-        <node pkg="pioneer3at" type="explorer" name="Explorer" required="true">
+        <node pkg="pioneer3at" type="explorer" name="Explorer" required="true" output="screen">
             <param name="robot_topic" type="str" value="robot_0" />
             <param name="goal_topic" type="str" value="/move_base_simple/goal" />
             <param name="occ_map_topic" type="str" value="/occ_gmapping_map" />
