@@ -28,7 +28,7 @@ stt:                  0.2
 
 linearUpdate:         0.5      
 angularUpdate:        0.2 
-temporalUpdate:       -1.0#2.0
+temporalUpdate:       5.0
 
 resampleThreshold:    0.5     
 particles:           100

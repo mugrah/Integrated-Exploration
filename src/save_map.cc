@@ -38,7 +38,7 @@ void save_map_simple(gmapping::occMap map, std::string robot)
 }
 
 
-void save_map_pose(gmapping::occMap map, mapPose m_pose, std::string robot)
+void save_map_pose(gmapping::occMap map, mapPose m_pose, std::string robot, int count)
 {
     ROS_INFO("Received a %d X %d map @ %.3f m/pix",
              map.map.info.width,
@@ -46,7 +46,7 @@ void save_map_pose(gmapping::occMap map, mapPose m_pose, std::string robot)
              map.map.info.resolution);
     char sysCall[512];
 
-    std::string mapdatafile = "/home/rafael/catkin_ws/src/integrated-exploration/maps/" + robot + "pose";
+    std::string mapdatafile = "/home/rafael/catkin_ws/src/integrated-exploration/maps/" + robot + "pose" + boost::to_string(count);
     sprintf(sysCall, "%s.ppm", mapdatafile.c_str());
     FILE* printFile = fopen(sysCall, "w");
     fprintf(printFile, "P6\n # particles.ppm \n %d %d\n", map.map.info.width, map.map.info.height);

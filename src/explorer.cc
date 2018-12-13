@@ -86,7 +86,7 @@ mapPose m_goal;
 
 int flowStatus;
 
-
+int map_pose_count = 0;
 
 /*****************************************
 *                                        *
@@ -97,47 +97,46 @@ int flowStatus;
 
 void ros_pose_CallBack(nav_msgs::Odometry pose)
 {
-    tf::StampedTransform transform;
-    tf::TransformListener listener;
+    if(robot_topic.compare("/robot_0") == 0){
+        tf::StampedTransform transform;
+        tf::TransformListener listener;
 
-    try{
-        listener.waitForTransform(map_topic, base_link_topic, ros::Time(0), ros::Duration(5.0));
-        listener.lookupTransform(map_topic, base_link_topic, ros::Time(0), transform);
-    }catch (tf::TransformException ex){
-        ROS_ERROR("%s",ex.what());
+        try{
+            listener.waitForTransform(map_topic, base_link_topic, ros::Time(0), ros::Duration(5.0));
+            listener.lookupTransform(map_topic, base_link_topic, ros::Time(0), transform);
+        }catch (tf::TransformException ex){
+            ROS_ERROR("%s",ex.what());
+        }
+
+        r_pose = pose;
+
+        m_pose = odom2map(&r_pose, &r_map, &transform);
+
+        // saveMapPose(m_pose, robot_topic);
+        // saveOdomPose(o_pose, robot_topic);
+
+        if(flowStatus == SET_NEW_GOAL){
+            ROS_ERROR_STREAM("PUBLISH NEW GOAL");
+
+            save_map_pose(r_map, m_pose, robot_topic, map_pose_count++);
+            m_goal = setNewGoal(goal_pub, r_map, pose, m_pose, &transform, a_beta, b_beta, alpha, beta, gama);
+            flowStatus++;
+        }
     }
-
-    r_pose = pose;
-
-    o_pose.x = r_pose.pose.pose.position.x;
-    o_pose.y = r_pose.pose.pose.position.y;
-    o_pose.yaw = r_pose.pose.pose.orientation.z;
-
-    m_pose = odom2map(o_pose, r_map.map.info, &transform);
-
-    saveMapPose(m_pose, robot_topic);
-    saveOdomPose(o_pose, robot_topic);
-
-    if(flowStatus == SET_NEW_GOAL){
-        save_map_pose(r_map, m_pose, robot_topic);
-        m_goal = setNewGoal(goal_pub, r_map, pose, m_pose, &transform, a_beta, b_beta, alpha, beta, gama);
-        flowStatus++;
-    }
-
 
 }
 
 void ros_map_Callback(gmapping::occMap map)
 {
     r_map = map;
-    save_map_simple(map, robot_topic);
-
+    
     if(flowStatus == NEW_MAP){
+        save_map_simple(map, robot_topic);
         flowStatus++;
     } else if (flowStatus == GOAL_SET) {
         if(!verify_if_goal_is_frontier(r_map, m_goal)){
             ROS_ERROR_STREAM("NOT FRONTIER");
-            flowStatus = SET_NEW_GOAL;
+            flowStatus = NEW_MAP;
         }
 
     }

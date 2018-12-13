@@ -22,17 +22,25 @@ odomPose map2odom(mapPose mPose, nav_msgs::MapMetaData info, tf::StampedTransfor
     return oPose;
 }
 
-mapPose odom2map(odomPose oPose, nav_msgs::MapMetaData info, tf::StampedTransform *transform){
+mapPose odom2map(nav_msgs::Odometry *pose, gmapping::occMap *map, tf::StampedTransform *transform){
     mapPose mPose;
 
-    double map_cell = info.resolution;
-    double map_x = info.origin.position.x;
-    double map_y = info.origin.position.y;
-    double map_height = info.height;
+    double map_cell = map->map.info.resolution;
+    double map_x = map->map.info.origin.position.x;
+    double map_y = map->map.info.origin.position.y;
+    double map_height = map->map.info.height;
+    double r_pose_x = pose->pose.pose.position.x;
+    double r_pose_y = pose->pose.pose.position.y;
+    
+    ROS_ERROR_STREAM("X map origin " << map_x << " transform " << transform->getOrigin().x());
+    ROS_ERROR_STREAM("Y map origin " << map_y << " transform " << transform->getOrigin().y());
 
-    mPose.x = (oPose.x - map_x - transform->getOrigin().x())/map_cell;
-    mPose.y = map_height - (oPose.y + transform->getOrigin().y() - map_y)/map_cell;
+    mPose.x = (r_pose_x - map_x - transform->getOrigin().x())/map_cell;
+    mPose.y = map_height - (r_pose_y + transform->getOrigin().y() - map_y)/map_cell;
     mPose.yaw = 0.0;
+
+    ROS_ERROR_STREAM("X Pose " << r_pose_x << " mPose " << mPose.x);
+    ROS_ERROR_STREAM("Y Pose " << r_pose_y << " mPose " << mPose.y);
 
     return mPose;
 }

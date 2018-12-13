@@ -46,7 +46,6 @@ void publishGoal(ros::Publisher goal_pub, nav_msgs::Odometry pose, int maxUtilit
     double qw = pose.pose.pose.orientation.w;
 
     uint yGoalMap = map.map.info.height - maxUtility/map.map.info.width - 1;
-    // uint xGoalMap = maxUtility - yGoalMap*map.map.info.height;
     uint xGoalMap = maxUtility - (maxUtility/map.map.info.width) * map.map.info.width; 
     // ROS_ERROR_STREAM("Goal Map " << yGoalMap << " " << xGoalMap << " " << maxUtility);
     // ROS_ERROR_STREAM("Robot Pose " << y << " " << x);
@@ -111,8 +110,10 @@ int verify_if_goal_is_frontier(gmapping::occMap map, mapPose m_goal) {
         }
     }
     
-    if (unknown / total < 0.7) 
+    if (unknown / total < 0.7) {
+        ROS_ERROR_STREAM(unknown / total);
         return 1;
+    }
     return 0;
 }
 
