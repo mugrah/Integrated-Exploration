@@ -117,12 +117,14 @@ void ros_pose_CallBack(nav_msgs::Odometry pose)
         if(flowStatus == SET_NEW_GOAL){
             // ROS_ERROR_STREAM("PUBLISH NEW GOAL");
 
-            // save_map_pose(r_map, m_pose, robot_topic, map_pose_count++);
-            r_goal = setNewGoal(r_map, pose, m_pose, &transform, a_beta, b_beta, alpha, beta, gama);
+            save_map_pose(r_map, m_pose, robot_topic, map_pose_count++);
+            r_goal = setNewGoal(&r_map, pose, m_pose, &transform, a_beta, b_beta, alpha, beta, gama);
             
             goal_pub.publish(r_goal);
 
             m_goal = goal2map(&r_goal, &r_map, &transform, robot_topic);
+
+            save_map_goal(r_map, m_pose, m_goal, robot_topic, map_pose_count);
 
             flowStatus++;
         }
@@ -135,7 +137,7 @@ void ros_map_Callback(gmapping::occMap map)
     r_map = map;
     
     if(flowStatus == NEW_MAP){
-        // save_map_simple(map, robot_topic);
+        save_map_simple(map, robot_topic);
         flowStatus++;
     } else if (flowStatus == GOAL_SET) {
         if(!verify_if_goal_is_frontier(r_map, m_goal)){

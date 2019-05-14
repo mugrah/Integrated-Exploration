@@ -34,7 +34,7 @@ int utilityFunction(int height, int width, double a_beta, double b_beta, double 
     return max_i;
 }
 
-geometry_msgs::PoseStamped publishGoal(nav_msgs::Odometry pose, int maxUtility, gmapping::occMap map, tf::StampedTransform *transform)
+geometry_msgs::PoseStamped publishGoal(nav_msgs::Odometry pose, int maxUtility, gmapping::occMap *map, tf::StampedTransform *transform)
 {
     geometry_msgs::PoseStamped r_goal;
     mapPose m_goal;
@@ -46,18 +46,18 @@ geometry_msgs::PoseStamped publishGoal(nav_msgs::Odometry pose, int maxUtility, 
     double qz = pose.pose.pose.orientation.z;
     double qw = pose.pose.pose.orientation.w;
 
-    uint yGoalMap = map.map.info.height - maxUtility/map.map.info.width - 1;
-    uint xGoalMap = maxUtility - (maxUtility/map.map.info.width) * map.map.info.width; 
-    ROS_ERROR_STREAM(yGoalMap << " " << xGoalMap << " " << maxUtility);
-    ROS_ERROR_STREAM(map.map.info.height << " " << map.map.info.width << " " << map.map.info.width*map.map.info.height);
+    uint yGoalMap = map->map.info.height - maxUtility/map->map.info.width - 1;
+    uint xGoalMap = maxUtility - (maxUtility/map->map.info.width) * map->map.info.width; 
+    // ROS_ERROR_STREAM(yGoalMap << " " << xGoalMap << " " << maxUtility);
+    // ROS_ERROR_STREAM(map->map.info.height << " " << map->map.info.width << " " << map->map.info.width*map->map.info.height);
     m_goal.y = yGoalMap;
     m_goal.x = xGoalMap;
     
-    r_goal.header.frame_id = map.map.header.frame_id;
+    r_goal.header.frame_id = map->map.header.frame_id;
     r_goal.header.stamp = ros::Time::now();
 
-    r_goal.pose.position.x = x + ((xGoalMap*map.map.info.resolution)+map.map.info.origin.position.x) - transform->getOrigin().x();
-    r_goal.pose.position.y = y + (((map.map.info.height-yGoalMap)*map.map.info.resolution) + map.map.info.origin.position.y) - transform->getOrigin().y();
+    r_goal.pose.position.x = x + ((xGoalMap*map->map.info.resolution)+map->map.info.origin.position.x) - transform->getOrigin().x();
+    r_goal.pose.position.y = y + (((map->map.info.height-yGoalMap)*map->map.info.resolution) + map->map.info.origin.position.y) - transform->getOrigin().y();
     r_goal.pose.position.z = z;
     r_goal.pose.orientation.x = qx;
     r_goal.pose.orientation.y = qy;
@@ -67,13 +67,13 @@ geometry_msgs::PoseStamped publishGoal(nav_msgs::Odometry pose, int maxUtility, 
     return r_goal;
 }
 
-geometry_msgs::PoseStamped setNewGoal(gmapping::occMap map, nav_msgs::Odometry pose, mapPose m_pose, tf::StampedTransform *transform, int a_beta, int b_beta, double alpha, double beta, double gama){
+geometry_msgs::PoseStamped setNewGoal(gmapping::occMap *map, nav_msgs::Odometry pose, mapPose m_pose, tf::StampedTransform *transform, int a_beta, int b_beta, double alpha, double beta, double gama){
 
-    int height = map.map.info.height;
-    int width = map.map.info.width;
+    int height = map->map.info.height;
+    int width = map->map.info.width;
 
     int maxUtility;
-    uFunction.assign(map.data.size(), 0.0);
+    uFunction.assign(map->data.size(), 0.0);
 
     mapPose m_goal;
 
@@ -93,6 +93,9 @@ geometry_msgs::PoseStamped setNewGoal(gmapping::occMap map, nav_msgs::Odometry p
 
 bool verify_if_goal_is_frontier(gmapping::occMap map, mapPose m_goal) {
 
+    // O robô está chegando nesse ponto, mas não atualiza mais o mapa nem o goal,
+    // precisa adicionar um modificador de distância para esse verificador tb.
+
     double total, unknown;
     total = unknown = 0.0;
 
@@ -106,9 +109,9 @@ bool verify_if_goal_is_frontier(gmapping::occMap map, mapPose m_goal) {
             total++;
         }
     }
-    
+
+    ROS_ERROR_STREAM("UNKNOWN / TOTAL  = " << unknown / total);
     if (unknown / total < 0.3) {
-        ROS_ERROR_STREAM(unknown / total);
         return false;
     }
     return true;

@@ -137,3 +137,5 @@ void save_map_goal(gmapping::occMap map, mapPose m_pose, mapPose m_goal, std::st
 
     ROS_INFO("Done\n");
 }
+
+

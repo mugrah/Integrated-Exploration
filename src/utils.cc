@@ -32,8 +32,8 @@ mapPose odom2map(nav_msgs::Odometry *pose, gmapping::occMap *map, tf::StampedTra
     double r_pose_x = pose->pose.pose.position.x;
     double r_pose_y = pose->pose.pose.position.y;
     
-    mPose.x = (r_pose_x - map_x - transform->getOrigin().x())/map_cell;
-    mPose.y = map_height - (r_pose_y + transform->getOrigin().y() - map_y)/map_cell;
+    mPose.x = (r_pose_x - map_x)/map_cell;
+    mPose.y = map_height - (r_pose_y - map_y)/map_cell;
     mPose.yaw = 0.0;
 
     return mPose;
@@ -49,8 +49,8 @@ mapPose goal2map(geometry_msgs::PoseStamped *pose, gmapping::occMap *map, tf::St
     double r_pose_x = pose->pose.position.x;
     double r_pose_y = pose->pose.position.y;
     
-    mPose.x = (r_pose_x - map_x - transform->getOrigin().x())/map_cell;
-    mPose.y = map_height - (r_pose_y + transform->getOrigin().y() - map_y)/map_cell;
+    mPose.x = (r_pose_x - map_x)/map_cell;
+    mPose.y = map_height - (r_pose_y - map_y)/map_cell;
     mPose.yaw = 0.0;
 
     return mPose;
