@@ -11,12 +11,12 @@
 
     <group ns="robot_0">
 	<include file="$(find pioneer3at)/launch/stage_launch/robot.launch">
-	    <arg name="n_s" value="/robot_0" />
+	    <arg name="n_s" value="robot_0" />
 	</include>
     </group>
     <group ns="robot_1">
 	<include file="$(find pioneer3at)/launch/stage_launch/robot.launch">
-	    <arg name="n_s" value="/robot_1" />
+	    <arg name="n_s" value="robot_1" />
 	</include>
     </group>
 

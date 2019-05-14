@@ -4,6 +4,7 @@
 ### Coordinate frame and tf parameters ###
 #global_frame:               /robot1/map
 #robot_base_frame:           /robot1/base_link
+plugins: []
 transform_tolerance:        0.5 # 0.2
 
 ### Rate parameters ###

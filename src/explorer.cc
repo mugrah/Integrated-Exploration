@@ -54,7 +54,6 @@
 ros::Publisher goal_pub;
 ros::Publisher cmd_vel_pub;
 
-
 ros::Subscriber map_sub;
 ros::Subscriber goal_status_sub;
 ros::Subscriber pose_sub;
@@ -82,7 +81,7 @@ nav_msgs::Odometry r_pose;
 mapPose m_pose;
 odomPose o_pose;
 mapPose m_goal;
-
+geometry_msgs::PoseStamped r_goal;
 
 int flowStatus;
 
@@ -110,16 +109,21 @@ void ros_pose_CallBack(nav_msgs::Odometry pose)
 
         r_pose = pose;
 
-        m_pose = odom2map(&r_pose, &r_map, &transform);
+        m_pose = odom2map(&r_pose, &r_map, &transform, robot_topic);
 
         // saveMapPose(m_pose, robot_topic);
         // saveOdomPose(o_pose, robot_topic);
 
         if(flowStatus == SET_NEW_GOAL){
-            ROS_ERROR_STREAM("PUBLISH NEW GOAL");
+            // ROS_ERROR_STREAM("PUBLISH NEW GOAL");
 
-            save_map_pose(r_map, m_pose, robot_topic, map_pose_count++);
-            m_goal = setNewGoal(goal_pub, r_map, pose, m_pose, &transform, a_beta, b_beta, alpha, beta, gama);
+            // save_map_pose(r_map, m_pose, robot_topic, map_pose_count++);
+            r_goal = setNewGoal(r_map, pose, m_pose, &transform, a_beta, b_beta, alpha, beta, gama);
+            
+            goal_pub.publish(r_goal);
+
+            m_goal = goal2map(&r_goal, &r_map, &transform, robot_topic);
+
             flowStatus++;
         }
     }
@@ -131,7 +135,7 @@ void ros_map_Callback(gmapping::occMap map)
     r_map = map;
     
     if(flowStatus == NEW_MAP){
-        save_map_simple(map, robot_topic);
+        // save_map_simple(map, robot_topic);
         flowStatus++;
     } else if (flowStatus == GOAL_SET) {
         if(!verify_if_goal_is_frontier(r_map, m_goal)){
@@ -174,7 +178,7 @@ int main( int argc, char* argv[] )
     n_.getParam("gama", gama);
 
     flowStatus = NEW_MAP;
-
+    
     goal_pub = n.advertise<geometry_msgs::PoseStamped>(goal_topic, 1);
 
     map_sub = n.subscribe(occ_map_topic, 1, ros_map_Callback);

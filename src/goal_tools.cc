@@ -34,9 +34,10 @@ int utilityFunction(int height, int width, double a_beta, double b_beta, double 
     return max_i;
 }
 
-void publishGoal(ros::Publisher goal_pub, nav_msgs::Odometry pose, int maxUtility, gmapping::occMap map, tf::StampedTransform *transform)
+geometry_msgs::PoseStamped publishGoal(nav_msgs::Odometry pose, int maxUtility, gmapping::occMap map, tf::StampedTransform *transform)
 {
     geometry_msgs::PoseStamped r_goal;
+    mapPose m_goal;
     double y = pose.pose.pose.position.y;
     double x = pose.pose.pose.position.x;
     double z = pose.pose.pose.position.z;
@@ -47,9 +48,11 @@ void publishGoal(ros::Publisher goal_pub, nav_msgs::Odometry pose, int maxUtilit
 
     uint yGoalMap = map.map.info.height - maxUtility/map.map.info.width - 1;
     uint xGoalMap = maxUtility - (maxUtility/map.map.info.width) * map.map.info.width; 
-    // ROS_ERROR_STREAM("Goal Map " << yGoalMap << " " << xGoalMap << " " << maxUtility);
-    // ROS_ERROR_STREAM("Robot Pose " << y << " " << x);
-
+    ROS_ERROR_STREAM(yGoalMap << " " << xGoalMap << " " << maxUtility);
+    ROS_ERROR_STREAM(map.map.info.height << " " << map.map.info.width << " " << map.map.info.width*map.map.info.height);
+    m_goal.y = yGoalMap;
+    m_goal.x = xGoalMap;
+    
     r_goal.header.frame_id = map.map.header.frame_id;
     r_goal.header.stamp = ros::Time::now();
 
@@ -61,21 +64,10 @@ void publishGoal(ros::Publisher goal_pub, nav_msgs::Odometry pose, int maxUtilit
     r_goal.pose.orientation.z = qz;
     r_goal.pose.orientation.w = qw;
 
-    // ROS_ERROR_STREAM("Robot Goal " << r_goal.pose.position.y << " " << r_goal.pose.position.x);
-
-    // ROS_ERROR_STREAM("Transform " << transform->getOrigin().y() << " " << transform->getOrigin().x());
-
-    // ROS_ERROR_STREAM("Resolution " << map.map.info.resolution);
-
-    // ROS_ERROR_STREAM("Height Width " << map.map.info.height << " " << map.map.info.width);
-    
-    // ROS_ERROR_STREAM("Map Origin " << map.map.info.origin.position.y << " " << map.map.info.origin.position.x);
-    // ROS_ERROR_STREAM("Y goal calc " << map.map.info.height - yGoalMap << " " << yGoalMap << " " << map.map.info.height);
-    goal_pub.publish(r_goal);
-
+    return r_goal;
 }
 
-mapPose setNewGoal(ros::Publisher goal_pub, gmapping::occMap map, nav_msgs::Odometry pose, mapPose m_pose, tf::StampedTransform *transform, int a_beta, int b_beta, double alpha, double beta, double gama){
+geometry_msgs::PoseStamped setNewGoal(gmapping::occMap map, nav_msgs::Odometry pose, mapPose m_pose, tf::StampedTransform *transform, int a_beta, int b_beta, double alpha, double beta, double gama){
 
     int height = map.map.info.height;
     int width = map.map.info.width;
@@ -89,32 +81,37 @@ mapPose setNewGoal(ros::Publisher goal_pub, gmapping::occMap map, nav_msgs::Odom
 //    infGain = calculate_inf_map(map, m_pose);
 //    coordCost = calculate_coord_map(map, m_pose);
     maxUtility = utilityFunction(height, width, a_beta, b_beta, alpha, beta, gama);
-    publishGoal(goal_pub, pose, maxUtility, map, transform);
-
-    return m_goal;
+    
+    geometry_msgs::PoseStamped r_goal;
+    
+    r_goal = publishGoal(pose, maxUtility, map, transform);
+    
+    return r_goal;
 
 
 }
 
-int verify_if_goal_is_frontier(gmapping::occMap map, mapPose m_goal) {
+bool verify_if_goal_is_frontier(gmapping::occMap map, mapPose m_goal) {
 
     double total, unknown;
-    total = unknown = 0;
+    total = unknown = 0.0;
 
-    for(unsigned int y = m_goal.y - 5; y < map.map.info.height + 5; y++) {
-        for(unsigned int x = m_goal.x - 5; x < map.map.info.width + 5; x++) {
+    ROS_ERROR_STREAM("GOAL " << m_goal.x << "  " << m_goal.y);
+
+    for(unsigned int y = m_goal.y - 5; y < m_goal.y + 5; y++) {
+        for(unsigned int x = m_goal.x - 5; x < m_goal.x + 5; x++) {
             unsigned int i = x + (map.map.info.height - y - 1) * map.map.info.width;
-            if (map.data[i] > 0.3 || map.data[i] < 0.7)
+            if (map.data[i] == -1)
                 unknown++;
             total++;
         }
     }
     
-    if (unknown / total < 0.7) {
+    if (unknown / total < 0.3) {
         ROS_ERROR_STREAM(unknown / total);
-        return 1;
+        return false;
     }
-    return 0;
+    return true;
 }
 
 
