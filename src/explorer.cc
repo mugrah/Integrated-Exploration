@@ -140,7 +140,7 @@ void ros_map_Callback(gmapping::occMap map)
         save_map_simple(map, robot_topic);
         flowStatus++;
     } else if (flowStatus == GOAL_SET) {
-        if(!verify_if_goal_is_frontier(r_map, m_goal)){
+        if((!verify_if_goal_is_frontier(r_map, m_goal)) || (verify_if_goal_is_near(r_pose, r_goal))){
             ROS_ERROR_STREAM("NOT FRONTIER");
             flowStatus = NEW_MAP;
         }
