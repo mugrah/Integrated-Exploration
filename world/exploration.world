@@ -17,13 +17,13 @@ window
   scale 268.660   # pixels per meter
   center [ -2.883  -4.846 ]
   rotate [ 67.500  -32.500 ]
-  			
+
   show_data 1              # 1=on 0=off
 )
 
 # load an environment bitmap
 floorplan
-( 
+(
   name "cave"
   size [16.000 16.000 0.800]
   pose [0.000 0.000 0.000 0.000]
@@ -32,7 +32,7 @@ floorplan
 
 pioneer3at
 (
-   name "r1"
+   name "r0"
    pose [ -2.228 -5.262 0.000 -151.707 ]
    fancysicklaser( pose [ 0.131 0.000 0.000 0.000 ] )
    #ctrl "wander"
@@ -40,16 +40,18 @@ pioneer3at
    #localization_origin [ 0 0 0 0 ]
    localization "odom"
    odom_error [ 0.05 0.05 0.0 0.05]
+
 )
 
 pioneer3at
 (
-   name "r2"
-   pose [ -0.228 -5.262 0.000 -151.707 ]
+   name "r1"
+   pose [ -1.228 -5.262 0.000 -151.707 ]
    fancysicklaser( pose [ 0.131 0.000 0.000 0.000 ] )
    #ctrl "wander"
    #localization "gps"
    #localization_origin [ 0 0 0 0 ]
    localization "odom"
-   odom_error [ 0.05 0.05 0 0.05 ]
+   odom_error [ 0.05 0.05 0.0 0.05]
+
 )

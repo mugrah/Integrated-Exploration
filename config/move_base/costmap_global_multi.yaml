@@ -1,5 +1,5 @@
 global_costmap:
-#  global_frame:           /robot1/map
+  # global_frame:           map
   update_frequency:       0.5
   publish_frequency:      0.5
  
@@ -13,7 +13,7 @@ global_costmap:
   lethal_cost_threshold:  100
 
   
-#  map_topic:              /robot1/map
+  # map_topic:              map
 
   # The following parameters are overwritten if "static_map" is set to true:
   #width:                 10
