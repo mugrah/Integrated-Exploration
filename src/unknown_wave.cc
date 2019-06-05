@@ -5,7 +5,7 @@
 #include <iostream>
 #include <string>
 
-#include "gmapping/occMap.h"
+#include "pioneer3at/OccMap.h"
 #include "frontier.cc"
 
 int colors1[]={255,  0 ,  0 , 255, 255,  0 , 255, 255, 255, 255,  0 , 127, 127, 127,  0 , 127}; 
@@ -57,7 +57,7 @@ void save_unknown_wave(int **u_wave, int width, int height, std::string robot_id
 }
 
 
-void mapTransform(gmapping::occMap map,  int width, int height, int **real_map, int **mapa, double **occ_real_map){
+void mapTransform(pioneer3at::OccMap map,  int width, int height, int **real_map, int **mapa, double **occ_real_map){
 
   for(int l=0;l<height;l++){
     for(int k=0;k<width;k++){

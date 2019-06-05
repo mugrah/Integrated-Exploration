@@ -1,6 +1,0 @@
-nav_msgs::OccupancyGrid map
-int32 id
-int32 x_mine
-int32 y_mine
-int32 x_other
-int32 y_other

@@ -3,7 +3,7 @@
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
-#include "pioneer3at/poses.h"
+#include "pioneer3at/Poses.h"
 #include <string>
 
 
@@ -50,7 +50,7 @@ void savemap(int **mapa, int height, int width, char *name){
 }
 
 
-void savemappos(int **mapa, int height, int width, char *name, pioneer3at::poses r){
+void savemappos(int **mapa, int height, int width, char *name, pioneer3at::Poses r){
 
     char sysCall[512];
     char number[512];
@@ -184,7 +184,7 @@ int compute_similarity(int **map1, int **map2, int width, int height){
 
 }
 
-int agreed(int **map1, int **map2, pioneer3at::poses r1, pioneer3at::poses r2){
+int agreed(int **map1, int **map2, pioneer3at::Poses r1, pioneer3at::Poses r2){
 
     int agreed = 0;
 
@@ -233,7 +233,7 @@ int agreed(int **map1, int **map2, pioneer3at::poses r1, pioneer3at::poses r2){
     return agreed;
 }
 
-int disagreed(int **map1, int **map2, pioneer3at::poses r1, pioneer3at::poses r2){
+int disagreed(int **map1, int **map2, pioneer3at::Poses r1, pioneer3at::Poses r2){
 
     int disagreed = 0;
 
@@ -282,7 +282,7 @@ int disagreed(int **map1, int **map2, pioneer3at::poses r1, pioneer3at::poses r2
     return disagreed;
 }
 
-void translate(cv::Mat& src, cv::Mat& dst, pioneer3at::poses mine, pioneer3at::poses other){
+void translate(cv::Mat& src, cv::Mat& dst, pioneer3at::Poses mine, pioneer3at::Poses other){
 
     int len = std::max(src.cols, src.rows);
     cv::Mat warp_mat( 2, 3, CV_32FC1 );
@@ -297,7 +297,7 @@ void translate(cv::Mat& src, cv::Mat& dst, pioneer3at::poses mine, pioneer3at::p
 }
 
 
-void rotate(cv::Mat& src, double angle, cv::Mat& dst, pioneer3at::poses r2)
+void rotate(cv::Mat& src, double angle, cv::Mat& dst, pioneer3at::Poses r2)
 {
     int len = std::max(src.cols, src.rows);
     //     cv::Point2f pt(len/2., len/2.);
@@ -308,9 +308,9 @@ void rotate(cv::Mat& src, double angle, cv::Mat& dst, pioneer3at::poses r2)
 }
 
 
-void stitchmap(int **map, int **map1, int **map2, double **occ_map, double **occ_map1, double **occ_map2, pioneer3at::poses r1, pioneer3at::poses r2, int height, int width, double angle){
+void stitchmap(int **map, int **map1, int **map2, double **occ_map, double **occ_map1, double **occ_map2, pioneer3at::Poses r1, pioneer3at::Poses r2, int height, int width, double angle){
     
-    pioneer3at::poses r_c;
+    pioneer3at::Poses r_c;
     double d1x, d1y, d2x, d2y;
 
     //std::ofstream myfile;

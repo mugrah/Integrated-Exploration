@@ -1,8 +1,0 @@
-int32 x_mine
-int32 y_mine
-int32 x_other
-int32 y_other
-int32 other_x
-int32 other_y
-int32 mine_x
-int32 mine_y

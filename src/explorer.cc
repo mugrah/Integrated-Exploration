@@ -35,7 +35,7 @@
 #include <vector>
 #include <stdio.h>
 
-#include "gmapping/occMap.h"
+#include "pioneer3at/OccMap.h"
 #include "utils.h"
 
 #include "save_map.cc"
@@ -76,7 +76,7 @@ double gama;
 double a_beta;
 double b_beta;
 
-gmapping::occMap r_map;
+pioneer3at::OccMap r_map;
 nav_msgs::Odometry r_pose;
 mapPose m_pose;
 odomPose o_pose;
@@ -132,7 +132,7 @@ void ros_pose_CallBack(nav_msgs::Odometry pose)
 
 }
 
-void ros_map_Callback(gmapping::occMap map)
+void ros_map_Callback(pioneer3at::OccMap map)
 {
     r_map = map;
     
@@ -140,7 +140,7 @@ void ros_map_Callback(gmapping::occMap map)
         save_map_simple(map, robot_topic);
         flowStatus++;
     } else if (flowStatus == GOAL_SET) {
-        if(!verify_if_goal_is_frontier(r_map, m_goal)){
+        if((!verify_if_goal_is_frontier(r_map, m_goal)) || (verify_if_goal_is_near(r_pose, r_goal))){
             ROS_ERROR_STREAM("NOT FRONTIER");
             flowStatus = NEW_MAP;
         }

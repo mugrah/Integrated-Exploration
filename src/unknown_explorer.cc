@@ -37,9 +37,9 @@
 
 #include "unknown_wave.cc"
 //#include "frontier.cc"
-#include "gmapping/occMap.h"
-#include "pioneer3at/poses.h"
-#include "pioneer3at/signal.h"
+#include "pioneer3at/OccMap.h"
+#include "pioneer3at/Poses.h"
+#include "pioneer3at/Signal.h"
 
 
 int id =0;
@@ -70,7 +70,7 @@ std::string other_robot_pose_topic;
 std::string robots_poses_topic;
 std::string signal_topic;
 
-pioneer3at::poses posesWave;
+pioneer3at::Poses posesWave;
 
 int abortcont=0;
 
@@ -218,7 +218,7 @@ void ros_set_goal_CallBack(nav_msgs::Odometry odometry)
   } 
 }
 
-void ros_save_occ_map_Callback(gmapping::occMap occ_map){
+void ros_save_occ_map_Callback(pioneer3at::OccMap occ_map){
   
   int width = occ_map.map.info.width;
   int height = occ_map.map.info.height;

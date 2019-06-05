@@ -22,7 +22,7 @@ odomPose map2odom(mapPose mPose, nav_msgs::MapMetaData info, tf::StampedTransfor
     return oPose;
 }
 
-mapPose odom2map(nav_msgs::Odometry *pose, gmapping::occMap *map, tf::StampedTransform *transform, std::string robot){
+mapPose odom2map(nav_msgs::Odometry *pose, pioneer3at::OccMap *map, tf::StampedTransform *transform, std::string robot){
     mapPose mPose;
 
     double map_cell = map->map.info.resolution;
@@ -39,7 +39,7 @@ mapPose odom2map(nav_msgs::Odometry *pose, gmapping::occMap *map, tf::StampedTra
     return mPose;
 }
 
-mapPose goal2map(geometry_msgs::PoseStamped *pose, gmapping::occMap *map, tf::StampedTransform *transform, std::string robot){
+mapPose goal2map(geometry_msgs::PoseStamped *pose, pioneer3at::OccMap *map, tf::StampedTransform *transform, std::string robot){
     mapPose mPose;
 
     double map_cell = map->map.info.resolution;

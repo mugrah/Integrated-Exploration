@@ -5,7 +5,7 @@
 #include <iostream>
 #include <string>
 
-#include "gmapping/occMap.h"
+#include "pioneer3at/OccMap.h"
 
 #define WINDOW_SIZE 9
 
@@ -47,7 +47,7 @@ void save_map(double **mapa, int width, int height, std::string robot_id){
   ROS_INFO("Done\n");
 }
 
-void mapTransform(gmapping::occMap map,  int width, int height, int **real_map, double **mapa, double **occ_real_map){
+void mapTransform(pioneer3at::OccMap map,  int width, int height, int **real_map, double **mapa, double **occ_real_map){
 
   for(int l=0;l<height;l++){
     for(int k=0;k<width;k++){

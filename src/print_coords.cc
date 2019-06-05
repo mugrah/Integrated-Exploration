@@ -9,7 +9,7 @@
 //#include <ar_track_alvar/Alvar.h>
 //#include <ar_track_alvar/Marker.h>
 //#include <ar_track_alvar/MarkerDetector.h>
-#include <ar_track_alvar_msgs/AlvarMarker.h>
+// #include <ar_track_alvar_msgs/AlvarMarker.h>
 #include <ar_track_alvar_msgs/AlvarMarkers.h>
 //#include "ar_track_alvar/AlvarMarker.h"
 //#include "ar_track_alvar/AlvarMarkers.h"

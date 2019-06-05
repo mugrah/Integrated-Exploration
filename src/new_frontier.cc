@@ -4,7 +4,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "gmapping/occMap.h"
+#include "pioneer3at/OccMap.h"
 #include "frontiers.h"
 
 void save_old_map(int **mapa, int width, int height, std::string robot_id, std::vector<frontier_position> &frontier_vector, double **occ_real_map){
@@ -114,7 +114,7 @@ void save_map(int **mapa, int width, int height, std::string robot_id, std::vect
 
 
 
-void mapTransform(gmapping::occMap map,  int width, int height, int **real_map, double **mapa, double **occ_real_map, double **windows, double **neg_wave, double **wave_map){
+void mapTransform(pioneer3at::OccMap map,  int width, int height, int **real_map, double **mapa, double **occ_real_map, double **windows, double **neg_wave, double **wave_map){
 
   for(int l=0;l<height;l++){
     for(int k=0;k<width;k++){

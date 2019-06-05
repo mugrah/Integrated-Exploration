@@ -2,14 +2,18 @@
 #include <tf/transform_listener.h>
 #include <tf/LinearMath/Matrix3x3.h>
 #include <geometry_msgs/PoseStamped.h>
-#include "gmapping/occMap.h"
+#include "pioneer3at/OccMap.h"
 #include "utils.h"
+#include "frontier_tools.h"
 #include "distance_cost.cc"
+#include "frontier_tools.cc"
+
 
 std::vector<double> distCost;
 std::vector<double> infGain;
 std::vector<double> coordCost;
 std::vector<double> uFunction;
+std::vector<frontier_data> frontiers;
 
 int utilityFunction(int height, int width, double a_beta, double b_beta, double alpha, double beta, double gama){
 
@@ -34,7 +38,7 @@ int utilityFunction(int height, int width, double a_beta, double b_beta, double 
     return max_i;
 }
 
-geometry_msgs::PoseStamped publishGoal(nav_msgs::Odometry pose, int maxUtility, gmapping::occMap *map, tf::StampedTransform *transform)
+geometry_msgs::PoseStamped publishGoal(nav_msgs::Odometry pose, int maxUtility, pioneer3at::OccMap *map, tf::StampedTransform *transform)
 {
     geometry_msgs::PoseStamped r_goal;
     mapPose m_goal;
@@ -67,7 +71,7 @@ geometry_msgs::PoseStamped publishGoal(nav_msgs::Odometry pose, int maxUtility, 
     return r_goal;
 }
 
-geometry_msgs::PoseStamped setNewGoal(gmapping::occMap *map, nav_msgs::Odometry pose, mapPose m_pose, tf::StampedTransform *transform, int a_beta, int b_beta, double alpha, double beta, double gama){
+geometry_msgs::PoseStamped setNewGoal(pioneer3at::OccMap *map, nav_msgs::Odometry pose, mapPose m_pose, tf::StampedTransform *transform, int a_beta, int b_beta, double alpha, double beta, double gama){
 
     int height = map->map.info.height;
     int width = map->map.info.width;
@@ -76,6 +80,9 @@ geometry_msgs::PoseStamped setNewGoal(gmapping::occMap *map, nav_msgs::Odometry 
     uFunction.assign(map->data.size(), 0.0);
 
     mapPose m_goal;
+    
+    frontiers = createFrontiers(map);
+    ROS_ERROR_STREAM(frontiers.size());
 
     distCost = calculate_cost_map(map, m_pose);
 //    infGain = calculate_inf_map(map, m_pose);
@@ -91,10 +98,7 @@ geometry_msgs::PoseStamped setNewGoal(gmapping::occMap *map, nav_msgs::Odometry 
 
 }
 
-bool verify_if_goal_is_frontier(gmapping::occMap map, mapPose m_goal) {
-
-    // O robô está chegando nesse ponto, mas não atualiza mais o mapa nem o goal,
-    // precisa adicionar um modificador de distância para esse verificador tb.
+bool verify_if_goal_is_frontier(pioneer3at::OccMap map, mapPose m_goal) {
 
     double total, unknown;
     total = unknown = 0.0;
@@ -114,7 +118,22 @@ bool verify_if_goal_is_frontier(gmapping::occMap map, mapPose m_goal) {
     if (unknown / total < 0.3) {
         return false;
     }
+
     return true;
+}
+
+bool verify_if_goal_is_near(nav_msgs::Odometry r_pose, geometry_msgs::PoseStamped r_goal) {
+
+    double y = r_pose.pose.pose.position.y;
+    double x = r_pose.pose.pose.position.x;
+    double xd = r_goal.pose.position.x;
+    double yd = r_goal.pose.position.y;
+
+    if( sqrt((x-xd)*(x-xd) + (y-yd)*(y-yd)) < 2.0){
+        return true;
+    }
+
+    return false;
 }
 
 
