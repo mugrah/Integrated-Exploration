@@ -1,11 +1,12 @@
 <?xml version="1.0"?>
 <launch>
-    <arg name="world_file" default="$(find pioneer3at)/world/exploration.world"/>
+    <!-- <arg name="world_file" default="$(find pioneer3at)/world/exploration.world"/> -->
+    <arg name="world_file" default="$(find pioneer3at)/world/turtlebot/exploration.world"/>
     <arg name="rviz" default="false"/>
     <arg name="robot0" default="true" />
     <arg name="robot1" default="true" />
 
-    <param name="/use_sim_time" value="true"/>
+    <param name="use_sim_time" value="true"/>
 
     <!-- run stage -->
     <node pkg="stage_ros" type="stageros" name="stageros" args="$(arg world_file)">
@@ -14,7 +15,8 @@
 
     <group if="$(arg robot0)">
         <group ns="robot_0">
-            <include file="$(find pioneer3at)/launch/include/single_robot.launch">
+            <!-- <include file="$(find pioneer3at)/launch/include/single_robot.launch"> -->
+            <include file="$(find pioneer3at)/launch/test_turtlebot/single_turtlebot.launch">
                 <arg name="ns" value="robot_0"/>
             </include>
         </group>
@@ -22,7 +24,8 @@
 
     <group if="$(arg robot1)">
         <group ns="robot_1">
-            <include file="$(find pioneer3at)/launch/include/single_robot.launch">
+            <!-- <include file="$(find pioneer3at)/launch/include/single_robot.launch"> -->
+            <include file="$(find pioneer3at)/launch/test_turtlebot/single_turtlebot.launch">
                 <arg name="ns" value="robot_1"/>
             </include>
         </group>
