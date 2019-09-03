@@ -107,7 +107,8 @@ void save_map_goal(gmapping::occMap map, mapPose m_pose, mapPose m_goal, std::st
             if( y == m_pose.y && x == m_pose.x)
             // if((y >= m_pose.y - 5 && y <= m_pose.y + 5) && (x >= m_pose.x - 5 && x <= m_pose.x + 5))
               fprintf(printFile, "%c%c%c", 255, 0, 0);
-            else if((y >= m_goal.y - 5 && y <= m_goal.y + 5) && (x >= m_goal.x - 5 && x <= m_goal.x + 5))
+            // else if((y >= m_goal.y - 5 && y <= m_goal.y + 5) && (x >= m_goal.x - 5 && x <= m_goal.x + 5))
+            else if((y == m_goal.y) && (x == m_goal.x))
               fprintf(printFile, "%c%c%c", 255, 0, 255);
             else if (y == 0 && x == 0)
               fprintf(printFile, "%c%c%c", 0, 0, 255);

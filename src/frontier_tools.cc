@@ -5,25 +5,6 @@
 #include "gmapping/occMap.h"
 
 
-void mapTransform(nav_msgs::OccupancyGrid map,  int width, int height, int **real_map, int **mapa){
-  for(int l=0;l<height;l++){
-    for(int k=0;k<width;k++){
-//        std::ofstream myfile;
-//   std::string filename = "/home/rafael/catkin_ws/src/ros-pioneer3at/maps/teste.txt";
-//   myfile.open (filename.c_str(),  std::ios::out | std::ios::app );
-//   myfile << l<<" "<<k<<"\n";
-//   myfile.close();
-      int t = (height - l -1)*width +k;
-      real_map[l][k] = map.data[t];
-      if(real_map[l][k] == +100)
-        mapa[l][k] = 1;
-      else
-        mapa[l][k]=-1;
-    }
-  }
-}
-
-
 int check_if_frontier(gmapping::occMap *map, unsigned int x, unsigned int y){
     int flag = 0;
     unsigned int it;
@@ -31,49 +12,50 @@ int check_if_frontier(gmapping::occMap *map, unsigned int x, unsigned int y){
     int width = map->map.info.width;
 
     it = x-1 + (height - y-1 - 1) * width;
-    if(map->map.data[it] == 0)
+    // ROS_ERROR_STREAM(map->data[it]);
+    if((map->data[it] > 0 && map->data[it] < 1) || (map->data[it] == -1))
         flag = 1;
     else if (map->map.data[it] == +100)
         return 0;
 
     it = x-1 + (height - y - 1) * width;
-    if(map->map.data[it] == 0)
+    if((map->data[it] > 0 && map->data[it] < 1) || (map->data[it] == -1))
         flag = 1;
     else if (map->map.data[it] == +100)
         return 0;
 
     it = x-1 + (height - y+1 - 1) * width;
-    if(map->map.data[it] == 0)
+    if((map->data[it] > 0 && map->data[it] < 1) || (map->data[it] == -1))
         flag = 1;
     else if (map->map.data[it] == +100)
         return 0;
 
     it = x + (height - y-1 - 1) * width;
-    if(map->map.data[it] == 0)
+    if((map->data[it] > 0 && map->data[it] < 1) || (map->data[it] == -1))
         flag = 1;
     else if (map->map.data[it] == +100)
         return 0;
 
     it = x + (height - y+1 - 1) * width;
-    if(map->map.data[it] == 0)
+    if((map->data[it] > 0 && map->data[it] < 1) || (map->data[it] == -1))
         flag = 1;
     else if (map->map.data[it] == +100)
         return 0;
 
     it = x+1 + (height - y-1 - 1) * width;
-    if(map->map.data[it] == 0)
+    if((map->data[it] > 0 && map->data[it] < 1) || (map->data[it] == -1))
         flag = 1;
     else if (map->map.data[it] == +100)
         return 0;
 
     it = x+1 + (height - y - 1) * width;
-    if(map->map.data[it] == 0)
+    if((map->data[it] > 0 && map->data[it] < 1) || (map->data[it] == -1))
         flag = 1;
     else if (map->map.data[it] == +100)
         return 0;
 
     it = x+1 + (height - y+1 - 1) * width;
-    if(map->map.data[it] == 0)
+    if((map->data[it] > 0 && map->data[it] < 1) || (map->data[it] == -1))
         flag = 1;
     else if (map->map.data[it] == +100)
         return 0;
@@ -92,9 +74,8 @@ std::vector<frontier_data> createFrontiers(gmapping::occMap *map){
     for(unsigned int y = 1; y < height-1; y++) {
         for(unsigned int x = 1; x < width-1; x++) {
             unsigned int i = x + (height - y - 1) * width;
-            if(map->map.data[i] == -1){
+            if(map->data[i] == 0.0){
                 if(check_if_frontier(map, x, y)){
-                    
                     if(frontier_vector.size()==0){
                         frontier_data aux;
                         aux.num = 1;
@@ -137,19 +118,23 @@ std::vector<frontier_data> createFrontiers(gmapping::occMap *map){
             j++;
     }
 
-    int dist;
-    int mindist;
+    double dist;
+    double mindist;
+    unsigned int it;
     for(int k=0;k<frontier_vector.size();k++){
         mindist=-1;
 
         for(int i = 0; i<frontier_vector[k].x.size(); i++){
             dist = 0;
 
-            for(int e = 1; e<frontier_vector[k].x.size(); e++){
-                dist += sqrt((frontier_vector[k].x[i] - frontier_vector[k].x[e])*(frontier_vector[k].x[i] - frontier_vector[k].x[e]) + (frontier_vector[k].y[i] - frontier_vector[k].y[e])*(frontier_vector[k].y[i] - frontier_vector[k].y[e]));
+            for(int e = 0; e<frontier_vector[k].x.size(); e++){
+                if(i != e)
+                    dist += sqrt((frontier_vector[k].x[i] - frontier_vector[k].x[e])*(frontier_vector[k].x[i] - frontier_vector[k].x[e]) + (frontier_vector[k].y[i] - frontier_vector[k].y[e])*(frontier_vector[k].y[i] - frontier_vector[k].y[e]));
             }
 
-            if(mindist==-1 || dist<mindist){
+            it = frontier_vector[k].x[i] + (height - frontier_vector[k].y[i] - 1) * width;
+            
+            if((mindist==-1 || dist<mindist) && (map->data[it] == 0.0)){
                 mindist = dist;
                 frontier_vector[k].min_dist = i;
                 frontier_vector[k].x_mean = frontier_vector[k].x[i];

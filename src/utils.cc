@@ -3,9 +3,6 @@
 #include <tf/transform_listener.h>
 #include "utils.h"
 
-
-
-
 odomPose map2odom(mapPose mPose, nav_msgs::MapMetaData info, tf::StampedTransform transform){
     odomPose oPose;
 

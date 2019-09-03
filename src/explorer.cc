@@ -120,6 +120,8 @@ void ros_pose_CallBack(nav_msgs::Odometry pose)
             save_map_pose(r_map, m_pose, robot_topic, map_pose_count++);
             r_goal = setNewGoal(&r_map, pose, m_pose, &transform, a_beta, b_beta, alpha, beta, gama);
             
+            ROS_ERROR_STREAM("before publishing - " << r_goal.header.frame_id);
+
             goal_pub.publish(r_goal);
 
             m_goal = goal2map(&r_goal, &r_map, &transform, robot_topic);
@@ -140,7 +142,8 @@ void ros_map_Callback(gmapping::occMap map)
         save_map_simple(map, robot_topic);
         flowStatus++;
     } else if (flowStatus == GOAL_SET) {
-        if((!verify_if_goal_is_frontier(r_map, m_goal)) || (verify_if_goal_is_near(r_pose, r_goal))){
+        // if((!verify_if_goal_is_frontier(r_map, m_goal)) || (verify_if_goal_is_near(r_pose, r_goal))){
+        if(verify_if_goal_is_near(r_pose, r_goal)){
             ROS_ERROR_STREAM("NOT FRONTIER");
             flowStatus = NEW_MAP;
         }

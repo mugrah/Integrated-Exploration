@@ -33,7 +33,7 @@ floorplan
 pioneer3at
 (
    name "r1"
-   pose [ -2.228 -5.262 0.000 -151.707 ]
+   pose [ -2.228 0.262 0.000 -151.707 ]
    fancysicklaser( pose [ 0.131 0.000 0.000 0.000 ] )
    #ctrl "wander"
    #localization "gps"

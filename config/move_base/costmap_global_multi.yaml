@@ -16,11 +16,11 @@ global_costmap:
 #  map_topic:              /robot1/map
 
   # The following parameters are overwritten if "static_map" is set to true:
-  #width:                 10
-  #height:                10
-  #resolution:            0.05
-  #origin_x:              0.0
-  #origin_y:              0.0
+  width:                 10
+  height:                10
+  resolution:            0.05
+  origin_x:              0.0
+  origin_y:              0.0
 
   ### Map type parameters ###
   map_type:               costmap

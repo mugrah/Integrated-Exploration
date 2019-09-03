@@ -38,22 +38,22 @@
 
         <node pkg="move_base" type="move_base" name="move_base" output="screen">
 
-            <rosparam file="$(find pioneer3at)/config/move_base/move_base_multi.yaml" command="load"/>
-            <rosparam file="$(find pioneer3at)/config/move_base/costmap_common_multi.yaml" command="load" ns="global_costmap" />
-            <rosparam file="$(find pioneer3at)/config/move_base/costmap_common_multi.yaml" command="load" ns="local_costmap" />
-            <rosparam file="$(find pioneer3at)/config/move_base/costmap_global_multi.yaml" command="load"  />
-            <rosparam file="$(find pioneer3at)/config/move_base/costmap_local_multi.yaml" command="load"/>
+            <rosparam file="$(find pioneer3at)/config/move_base/move_base_stage.yaml" command="load"/>
+            <rosparam file="$(find pioneer3at)/config/move_base/costmap_common_stage.yaml" command="load" ns="global_costmap" />
+            <rosparam file="$(find pioneer3at)/config/move_base/costmap_common_stage.yaml" command="load" ns="local_costmap" />
+            <rosparam file="$(find pioneer3at)/config/move_base/costmap_global_stage.yaml" command="load"  />
+            <rosparam file="$(find pioneer3at)/config/move_base/costmap_local_stage.yaml" command="load"/>
 
-	    <param name="move_base/global_frame_id" type="str" value="/$(arg n_s)/map" />
+	    <param name="move_base/global_frame_id" type="str" value="$(arg n_s)/map" />
 	    <param name="global_costmap/global_frame" type="str" value="$(arg n_s)/map" />
 	    <param name="local_costmap/global_frame" type="str" value="$(arg n_s)/map" />
-	    <param name="global_costmap/map_topic" type="str" value="$(arg n_s)/map" />
-	    <param name="local_costmap/map_topic" type="str" value="$(arg n_s)/map" />
+	    <param name="global_costmap/map_topic" type="str" value="/$(arg n_s)/map" />
+	    <param name="local_costmap/map_topic" type="str" value="/$(arg n_s)/map" />
 	    <param name="global_costmap/robot_base_frame" type="str" value="$(arg n_s)/base_link" />
-	    <param name="global_costmap/laserscan/topic" type="str" value="$(arg n_s)/base_scan" />
+	    <param name="global_costmap/laserscan/topic" type="str" value="/$(arg n_s)/base_scan" />
 	    <param name="global_costmap/laserscan/sensor_frame" type="str" value="$(arg n_s)/base_scan" />
 	    <param name="local_costmap/robot_base_frame" type="str" value="$(arg n_s)/base_link" />
-	    <param name="local_costmap/laserscan/topic" type="str" value="$(arg n_s)/base_scan" />
+	    <param name="local_costmap/laserscan/topic" type="str" value="/$(arg n_s)/base_scan" />
 	    <param name="local_costmap/laserscan/sensor_frame" type="str" value="$(arg n_s)/base_scan" />
 		<param name="controller_frequency" value="10.0" />
 

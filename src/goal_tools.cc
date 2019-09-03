@@ -20,20 +20,25 @@ int utilityFunction(int height, int width, double a_beta, double b_beta, double 
     double max=0.0;
     unsigned int max_i;
     
-    for(unsigned int y = 1; y < height; y++) {
-        for(unsigned int x = 1; x < width; x++) {
-            unsigned int i = x + (height - y - 1) * width;
-            if(distCost[i] != -1.0)
-                distCost[i] = pow(distCost[i], (a_beta-1.0))*pow((1.0-distCost[i]), (b_beta-1.0));
+    // for(unsigned int y = 1; y < height; y++) {
+        // for(unsigned int x = 1; x < width; x++) {
+            // unsigned int i = x + (height - y - 1) * width;
+    for(int j = 0; j < frontiers.size(); j++){
+            // if(distCost[i] != -1.0)
+                // distCost[i] = pow(distCost[i], (a_beta-1.0))*pow((1.0-distCost[i]), (b_beta-1.0));
+        unsigned int i = frontiers[j].center;
+        
+        uFunction[i] = beta*distCost[i] /*+ alpha*infGain[i] + gama*coordCost[i]*/;
+        
+        
 
-            uFunction[i] = beta*distCost[i] /*+ alpha*infGain[i] + gama*coordCost[i]*/;
-            
-            if(uFunction[i]>max){
-                max=uFunction[i];
-                max_i = i;
-            }
 
+        if(uFunction[i]>max){
+            max=uFunction[i];
+            max_i = i;
         }
+
+        // }
     }
     return max_i;
 }
@@ -52,13 +57,14 @@ geometry_msgs::PoseStamped publishGoal(nav_msgs::Odometry pose, int maxUtility, 
 
     uint yGoalMap = map->map.info.height - maxUtility/map->map.info.width - 1;
     uint xGoalMap = maxUtility - (maxUtility/map->map.info.width) * map->map.info.width; 
-    // ROS_ERROR_STREAM(yGoalMap << " " << xGoalMap << " " << maxUtility);
-    // ROS_ERROR_STREAM(map->map.info.height << " " << map->map.info.width << " " << map->map.info.width*map->map.info.height);
+
     m_goal.y = yGoalMap;
     m_goal.x = xGoalMap;
     
     r_goal.header.frame_id = map->map.header.frame_id;
     r_goal.header.stamp = ros::Time::now();
+
+    ROS_ERROR_STREAM("frame " << r_goal.header.frame_id << "  stamp " << r_goal.header.stamp);
 
     r_goal.pose.position.x = x + ((xGoalMap*map->map.info.resolution)+map->map.info.origin.position.x) - transform->getOrigin().x();
     r_goal.pose.position.y = y + (((map->map.info.height-yGoalMap)*map->map.info.resolution) + map->map.info.origin.position.y) - transform->getOrigin().y();
