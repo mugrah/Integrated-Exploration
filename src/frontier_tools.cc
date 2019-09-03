@@ -2,10 +2,10 @@
 #include <cstdlib>
 
 #include "frontier_tools.h"
-#include "gmapping/occMap.h"
+#include "pioneer3at/OccMap.h"
 
 
-int check_if_frontier(gmapping::occMap *map, unsigned int x, unsigned int y){
+int check_if_frontier(pioneer3at::OccMap *map, unsigned int x, unsigned int y){
     int flag = 0;
     unsigned int it;
     int height = map->map.info.height;
@@ -63,7 +63,7 @@ int check_if_frontier(gmapping::occMap *map, unsigned int x, unsigned int y){
     return flag;
 }
 
-std::vector<frontier_data> createFrontiers(gmapping::occMap *map){
+std::vector<frontier_data> createFrontiers(pioneer3at::OccMap *map){
   
     int flag;
     int height = map->map.info.height;

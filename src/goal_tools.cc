@@ -104,7 +104,7 @@ geometry_msgs::PoseStamped setNewGoal(pioneer3at::OccMap *map, nav_msgs::Odometr
 
 }
 
-bool verify_if_goal_is_frontier(gmapping::occMap map, mapPose m_goal) {
+bool verify_if_goal_is_frontier(pioneer3at::OccMap map, mapPose m_goal) {
 
     double total, unknown;
     total = unknown = 0.0;
