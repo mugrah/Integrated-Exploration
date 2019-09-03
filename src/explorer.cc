@@ -65,10 +65,10 @@ std::string goal_topic;
 std::string map_topic;
 std::string occ_map_topic;
 std::string pose_topic;
-std::string cmd_vel_topic;
+// std::string cmd_vel_topic;
 std::string base_link_topic;
-std::string goal_status_topic;
-std::string laser_topic;
+// std::string goal_status_topic;
+// std::string laser_topic;
 
 double alpha;
 double beta;
@@ -168,9 +168,9 @@ int main( int argc, char* argv[] )
     n_.getParam("occ_map_topic", occ_map_topic);
     n_.getParam("goal_topic", goal_topic);
     n_.getParam("pose_topic", pose_topic);
-    n_.getParam("cmd_vel_topic", cmd_vel_topic);
-    n_.getParam("laser_topic", laser_topic);
-    n_.getParam("goal_status_topic", goal_status_topic);
+    // n_.getParam("cmd_vel_topic", cmd_vel_topic);
+    // n_.getParam("laser_topic", laser_topic);
+    // n_.getParam("goal_status_topic", goal_status_topic);
     n_.getParam("robot_topic", robot_topic);
     n_.getParam("base_link_topic", base_link_topic);
     n_.getParam("a_beta", a_beta);
@@ -184,7 +184,6 @@ int main( int argc, char* argv[] )
     goal_pub = n.advertise<geometry_msgs::PoseStamped>(goal_topic, 1);
 
     map_sub = n.subscribe(occ_map_topic, 1, ros_map_Callback);
-
     pose_sub = n.subscribe(pose_topic, 1, ros_pose_CallBack);
 
     ros::spin();
