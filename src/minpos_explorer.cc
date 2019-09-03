@@ -36,9 +36,9 @@
 
 
 //#include "frontier_window.cc"
-#include "gmapping/occMap.h"
-#include "pioneer3at/poses.h"
-#include "pioneer3at/signal.h"
+#include "pioneer3at/OccMap.h"
+#include "pioneer3at/Poses.h"
+#include "pioneer3at/Signal.h"
 #include "minpos.cc"
 
 int id =0;
@@ -77,8 +77,8 @@ std::string signal_topic;
 int robot_id;
 int choosen_front;
 
-pioneer3at::poses posesWave;
-pioneer3at::poses r_poses;
+pioneer3at::Poses posesWave;
+pioneer3at::Poses r_poses;
 
 int abortcont=0;
 
@@ -147,7 +147,7 @@ void mapSaver(nav_msgs::OccupancyGrid map, const std::string& mapname_, int id){
     ROS_INFO("Done\n");
 }
 
-void ros_signal_Callback(pioneer3at::signal sig){
+void ros_signal_Callback(pioneer3at::Signal sig){
     if(sig.sig == 1){
         //     std::ofstream myfile;
         //     std::string filename = "/home/rafael/catkin_ws/src/ros-pioneer3at/maps/signal" + robot_topic +"_"".txt";
@@ -275,7 +275,7 @@ void ros_set_goal_CallBack(nav_msgs::Odometry odometry)
     }
 }
 
-void ros_save_occ_map_Callback(gmapping::occMap occ_map){
+void ros_save_occ_map_Callback(pioneer3at::OccMap occ_map){
 
     int width = occ_map.map.info.width;
     int height = occ_map.map.info.height;
@@ -382,7 +382,7 @@ int main( int argc, char* argv[] )
 
     frontier_cmd_vel = n.advertise<geometry_msgs::PoseStamped>(goal_topic, 1);
     //  frontier_cmd_vel = n.advertise<move_base_msgs::MoveBaseActionGoal>(goal_topic, 1);
-    frontier_robots_poses = n.advertise<pioneer3at::poses>(robots_poses_topic,1);
+    frontier_robots_poses = n.advertise<pioneer3at::Poses>(robots_poses_topic,1);
 
     frontier_occ_map = n.subscribe(occ_map_topic, 1, ros_save_occ_map_Callback);
     frontier_goal_status = n.subscribe(goal_status_topic, 1, ros_goal_status_Callback);

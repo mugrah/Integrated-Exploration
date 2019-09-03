@@ -1,11 +1,11 @@
-#include "gmapping/occMap.h"
+#include "pioneer3at/OccMap.h"
 #include "utils.h"
 
 #define MAP_FREE 99999.0
 
 int count_wave = 0;
 
-void save_map_wave(gmapping::occMap map, std::vector<double>  aux)
+void save_map_wave(pioneer3at::OccMap map, std::vector<double>  aux)
 {
     ROS_INFO("Received a %d X %d map @ %.3f m/pix",
              map.map.info.width,
@@ -13,7 +13,7 @@ void save_map_wave(gmapping::occMap map, std::vector<double>  aux)
              map.map.info.resolution);
     char sysCall[512];
 
-    std::string mapdatafile = "/home/colares/catkin_ws/src/integrated-exploration/maps/wave_" + boost::to_string(count_wave++);
+    std::string mapdatafile = "/home/alves/ros_workspaces/poc_ws/src/pioneer3at/maps/wave_" + boost::to_string(count_wave++);
     sprintf(sysCall, "%s.ppm", mapdatafile.c_str());
     FILE* printFile = fopen(sysCall, "w");
     fprintf(printFile, "P6\n # particles.ppm \n %d %d\n", map.map.info.width, map.map.info.height);
@@ -50,7 +50,7 @@ void start_map(double & i){
         i=-1.0;
 }
 
-std::vector<double> wavefront(gmapping::occMap *map, mapPose m_pose, double &max){
+std::vector<double> wavefront(pioneer3at::OccMap *map, mapPose m_pose, double &max){
 
     std::vector<double>  aux;
 
@@ -239,7 +239,7 @@ std::vector<double> wavefront(gmapping::occMap *map, mapPose m_pose, double &max
     return aux;
 }
 
-std::vector<double> calculate_cost_map(gmapping::occMap *map, mapPose m_pose){
+std::vector<double> calculate_cost_map(pioneer3at::OccMap *map, mapPose m_pose){
 
     int height = map->map.info.height;
     int width = map->map.info.width;

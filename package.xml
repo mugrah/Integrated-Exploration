@@ -27,20 +27,10 @@
   <run_depend>tf</run_depend>
   <run_depend>robot_state_publisher</run_depend>
   <run_depend>joy</run_depend>
-  <run_depend>ps3joy</run_depend>
   <run_depend>message_runtime</run_depend>
   <run_depend>cv_bridge</run_depend>
-  <!-- Strictly speaking, only one is required... -->
-  <!-- <run_depend>ROSARIA</run_depend> no rosdep rule exists (yet) -->
-  <!-- <run_depend>p2os</run_depend> no rosdep rule exists (yet) -->
- 
-  <!-- Strictly speaking, only one is required... -->
-  <run_depend>sicktoolbox_wrapper</run_depend>
-  <run_depend>urg_node</run_depend>
   
   <run_depend>amcl</run_depend>
   <run_depend>gmapping</run_depend>
   <run_depend>move_base</run_depend>
-  <run_depend>diagnostics</run_depend>
-
 </package>

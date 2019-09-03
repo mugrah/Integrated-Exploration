@@ -18,9 +18,9 @@
 #include "map_merge.cc"
 
 
-#include "gmapping/occMap.h"
-#include "pioneer3at/poses.h"
-#include "pioneer3at/signal.h"
+#include "pioneer3at/OccMap.h"
+#include "pioneer3at/Poses.h"
+#include "pioneer3at/Signal.h"
 
 //#include "combine_grids.cc"
 
@@ -47,14 +47,14 @@ std::string other_robot_pose_topic;
 std::string signal_topic;
 std::string signal_merge;
 
-gmapping::occMap actual_map;
-gmapping::occMap other_map;
+pioneer3at::OccMap actual_map;
+pioneer3at::OccMap other_map;
 
 
-pioneer3at::poses robotPose;
-pioneer3at::poses other_robotPose;
-pioneer3at::poses startPose;
-pioneer3at::signal sig;
+pioneer3at::Poses robotPose;
+pioneer3at::Poses other_robotPose;
+pioneer3at::Poses startPose;
+pioneer3at::Signal sig;
 
 // int **real_map;
 // int **real_map_other;
@@ -92,7 +92,7 @@ void mapTransform(nav_msgs::OccupancyGrid map,  int width, int height, int **rea
     //   savemap(real_map, MAP_SIZE, MAP_SIZE, name);
 }
 
-void occ_mapTransform(gmapping::occMap occ_map, double **map){
+void occ_mapTransform(pioneer3at::OccMap occ_map, double **map){
     for(int l=0;l<MAP_SIZE;l++){
         for(int k=0;k<MAP_SIZE;k++){
             if(l>=occ_map.map.info.height || k >= occ_map.map.info.width){
@@ -137,7 +137,7 @@ void occmap2gm(double **map){
             actual_map.data[t++] = map[l][k];
 }
 
-void mergeSameMap(gmapping::occMap new_map){
+void mergeSameMap(pioneer3at::OccMap new_map){
 
     int **map1, **map2, **map;
     double  **occ_map1, **occ_map2, **occ_map;
@@ -417,7 +417,7 @@ void mergeMaps(){
 
 
 
-void ros_robots_pose_Callback(pioneer3at::poses aux){
+void ros_robots_pose_Callback(pioneer3at::Poses aux){
 
     if(aux.x_other !=-1){
         robotPose = aux;
@@ -438,7 +438,7 @@ void ros_robots_pose_Callback(pioneer3at::poses aux){
 
 
 
-void ros_other_pose_Callback(pioneer3at::poses aux){
+void ros_other_pose_Callback(pioneer3at::Poses aux){
 
     if(flag_map==1){
         other_robotPose = aux;
@@ -446,7 +446,7 @@ void ros_other_pose_Callback(pioneer3at::poses aux){
     }
 }
 
-void ros_other_map_Callback(gmapping::occMap other_robot_map){
+void ros_other_map_Callback(pioneer3at::OccMap other_robot_map){
 
     if(flag_pose==1){
         other_map = other_robot_map;
@@ -455,10 +455,10 @@ void ros_other_map_Callback(gmapping::occMap other_robot_map){
     }
 }
 
-gmapping::occMap enlargeMap(gmapping::occMap occ_map){
+pioneer3at::OccMap enlargeMap(pioneer3at::OccMap occ_map){
 
     int **gmap, **smap;
-    gmapping::occMap aux;
+    pioneer3at::OccMap aux;
 
     aux.map.header = occ_map.map.header;
     aux.map.info = occ_map.map.info;
@@ -485,9 +485,9 @@ gmapping::occMap enlargeMap(gmapping::occMap occ_map){
 
 }
 
-void ros_occ_map_Callback(gmapping::occMap occ_map){
+void ros_occ_map_Callback(pioneer3at::OccMap occ_map){
 
-    gmapping::occMap aux;
+    pioneer3at::OccMap aux;
 
     origin_y = occ_map.map.info.origin.position.y;
     origin_x = occ_map.map.info.origin.position.x;
@@ -604,7 +604,7 @@ void mergedMap(){
 }
 
 
-void ros_signal_Callback(pioneer3at::signal aux){
+void ros_signal_Callback(pioneer3at::Signal aux){
 
     if(aux.sig == 1)
         mergedMap();
@@ -632,9 +632,9 @@ int main( int argc, char* argv[] )
     n_.getParam("signal_topic", signal_topic);
     n_.getParam("signal_merge",signal_merge);
 
-    signal_publisher = n.advertise<pioneer3at::signal>(signal_topic, 1);
+    signal_publisher = n.advertise<pioneer3at::Signal>(signal_topic, 1);
     map_publisher = n.advertise<nav_msgs::OccupancyGrid>(map_topic, 1);
-    occ_map_publisher = n.advertise<gmapping::occMap>(occ_map_topic, 1);
+    occ_map_publisher = n.advertise<pioneer3at::OccMap>(occ_map_topic, 1);
     signal_subscriber = n.subscribe(signal_merge,1,ros_signal_Callback);
     occ_map_subscriber = n.subscribe(occ_gmapping_map_topic, 1, ros_occ_map_Callback);
     other_map_subscriber = n.subscribe(other_map_topic, 1, ros_other_map_Callback);

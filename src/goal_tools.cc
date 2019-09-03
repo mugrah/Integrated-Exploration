@@ -2,7 +2,7 @@
 #include <tf/transform_listener.h>
 #include <tf/LinearMath/Matrix3x3.h>
 #include <geometry_msgs/PoseStamped.h>
-#include "gmapping/occMap.h"
+#include "pioneer3at/OccMap.h"
 #include "utils.h"
 #include "frontier_tools.h"
 #include "distance_cost.cc"
@@ -43,7 +43,7 @@ int utilityFunction(int height, int width, double a_beta, double b_beta, double 
     return max_i;
 }
 
-geometry_msgs::PoseStamped publishGoal(nav_msgs::Odometry pose, int maxUtility, gmapping::occMap *map, tf::StampedTransform *transform)
+geometry_msgs::PoseStamped publishGoal(nav_msgs::Odometry pose, int maxUtility, pioneer3at::OccMap *map, tf::StampedTransform *transform)
 {
     geometry_msgs::PoseStamped r_goal;
     mapPose m_goal;
@@ -77,7 +77,7 @@ geometry_msgs::PoseStamped publishGoal(nav_msgs::Odometry pose, int maxUtility, 
     return r_goal;
 }
 
-geometry_msgs::PoseStamped setNewGoal(gmapping::occMap *map, nav_msgs::Odometry pose, mapPose m_pose, tf::StampedTransform *transform, int a_beta, int b_beta, double alpha, double beta, double gama){
+geometry_msgs::PoseStamped setNewGoal(pioneer3at::OccMap *map, nav_msgs::Odometry pose, mapPose m_pose, tf::StampedTransform *transform, int a_beta, int b_beta, double alpha, double beta, double gama){
 
     int height = map->map.info.height;
     int width = map->map.info.width;
