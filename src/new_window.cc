@@ -8,7 +8,7 @@
 
 #include "frontiers.h"
 
-#include "gmapping/occMap.h"
+#include "pioneer3at/OccMap.h"
 
 #define WINDOW_SIZE 3
 

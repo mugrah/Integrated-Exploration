@@ -1,7 +1,7 @@
-#include "gmapping/occMap.h"
+#include "pioneer3at/OccMap.h"
 
 
-gmapping::occMap calculate_information_map(gmapping::occMap map){
+pioneer3at::OccMap calculate_information_map(pioneer3at::OccMap map){
 
     int height = map.map.info.height;
     int width = map.map.info.width;

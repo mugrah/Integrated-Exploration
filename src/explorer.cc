@@ -35,7 +35,7 @@
 #include <vector>
 #include <stdio.h>
 
-#include "gmapping/occMap.h"
+#include "gmapping/OccMap.h"
 #include "utils.h"
 
 #include "save_map.cc"
@@ -76,7 +76,7 @@ double gama;
 double a_beta;
 double b_beta;
 
-gmapping::occMap r_map;
+pioneer3at::OccMap r_map;
 nav_msgs::Odometry r_pose;
 mapPose m_pose;
 odomPose o_pose;
@@ -134,7 +134,7 @@ void ros_pose_CallBack(nav_msgs::Odometry pose)
 
 }
 
-void ros_map_Callback(gmapping::occMap map)
+void ros_map_Callback(pioneer3at::OccMap map)
 {
     r_map = map;
     

@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- <arg name="world_file" default="$(find pioneer3at)/world/exploration.world"/> -->
+    <arg name="world_file" default="$(find pioneer3at)/world/turtlebot/exploration.world"/>
+    <arg name="rviz" default="false"/>
+    <arg name="robot0" default="true" />
+    <arg name="robot1" default="true" />
+
+    <param name="use_sim_time" value="true"/>
+
+    <!-- run stage -->
+    <node pkg="stage_ros" type="stageros" name="stageros" args="$(arg world_file)">
+        <param name="base_watchdog_timeout" value="0.5"/>
+    </node>
+
+    <group if="$(arg robot0)">
+        <group ns="robot_0">
+            <!-- <include file="$(find pioneer3at)/launch/include/single_robot.launch"> -->
+            <include file="$(find pioneer3at)/launch/test_turtlebot/single_turtlebot.launch">
+                <arg name="ns" value="robot_0"/>
+            </include>
+        </group>
+    </group>
+
+    <group if="$(arg robot1)">
+        <group ns="robot_1">
+            <!-- <include file="$(find pioneer3at)/launch/include/single_robot.launch"> -->
+            <include file="$(find pioneer3at)/launch/test_turtlebot/single_turtlebot.launch">
+                <arg name="ns" value="robot_1"/>
+            </include>
+        </group>
+    </group>
+
+    <!-- run rviz -->
+    <group if="$(arg rviz)">
+        <!-- TODO: change the configuration to agregate robot sensors reads in folders inside rviz -->
+        <node pkg="rviz" type="rviz" name="rviz" args="-d $(find pioneer3at)/rviz/exploration.rviz"/>
+    </group>
+</launch>

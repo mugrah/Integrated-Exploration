@@ -35,9 +35,9 @@
 
 
 #include "frontier.cc"
-#include "gmapping/occMap.h"
-#include "pioneer3at/poses.h"
-#include "pioneer3at/signal.h"
+#include "pioneer3at/OccMap.h"
+#include "pioneer3at/Poses.h"
+#include "pioneer3at/Signal.h"
 
 ros::Publisher frontier_cmd_vel;
 ros::Publisher frontier_map_pose;
@@ -65,7 +65,7 @@ std::string other_robot_pose_topic;
 std::string robots_poses_topic;
 std::string signal_topic;
 
-pioneer3at::poses posesWave;
+pioneer3at::Poses posesWave;
 
 int **real_map;
 int **mapa;
@@ -147,7 +147,7 @@ void mapSaver(nav_msgs::OccupancyGrid map, const std::string& mapname_, int id){
   myfile.close();
 }
 
-void ros_signal_Callback(pioneer3at::signal sig){
+void ros_signal_Callback(pioneer3at::Signal sig){
   if(sig.sig == 1){
     goal_plan = 0;
   }
@@ -216,7 +216,7 @@ void ros_other_robot_pose_Callback(nav_msgs::Odometry odometry){
     }
     
     
-    pioneer3at::poses aux;
+    pioneer3at::Poses aux;
     aux.dist = dist;
     aux.x_other = x_other;
     aux.y_other = y_other;
@@ -365,7 +365,7 @@ int main( int argc, char* argv[] )
   }
  
   frontier_cmd_vel = n.advertise<move_base_msgs::MoveBaseActionGoal>(goal_topic, 1);
-  frontier_robots_poses = n.advertise<pioneer3at::poses>(robots_poses_topic,1);
+  frontier_robots_poses = n.advertise<pioneer3at::Poses>(robots_poses_topic,1);
 //   frontier_map_pose = n.advertise<nav_msgs::OccupancyGrid>(map_merge_topic,1);
   frontier_other_robot_pose = n.subscribe(other_robot_pose_topic, 1, ros_other_robot_pose_Callback);
   frontier_goal_status = n.subscribe(goal_status_topic, 1, ros_goal_status_Callback);

@@ -36,7 +36,7 @@
 
 
 #include "frontier.cc"
-#include "gmapping/occMap.h"
+#include "pioneer3at/OccMap.h"
 
 int first=0;
 int id =0;
@@ -227,7 +227,7 @@ void ros_set_goal_CallBack(nav_msgs::Odometry odometry)
   } 
 }
 
-void occ_save_CallBack(gmapping::occMap map){
+void occ_save_CallBack(pioneer3at::OccMap map){
 
     if(!first_map){
         int height = map.map.info.height;
