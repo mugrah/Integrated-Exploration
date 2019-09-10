@@ -10,8 +10,8 @@ throttle_scans:       1
 map_update_interval:  2.0 
 
 # Unset maxUrange and maxRange and it will autodetect
-maxUrange:            8.0
-maxRange:             9.0
+maxUrange:            5.0
+maxRange:             8.0
 sigma:                0.05
 kernelSize:           1 
 lstep:                0.05
@@ -47,7 +47,6 @@ lasamplestep:         0.005
 
 transform_publish_period:  0.2      
 occ_thresh:           0.25
-# maxRange:           10.0
 
 tf_delay:             0.5
 

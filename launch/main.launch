@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
     <arg name="world_file" default="$(find pioneer3at)/world/exploration.world"/>
-    <arg name="rviz" default="false"/>
+    <arg name="rviz" default="true"/>
     <arg name="robot0" default="true" />
     <arg name="robot1" default="false" />
 
