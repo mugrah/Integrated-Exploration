@@ -34,7 +34,7 @@
     <param name="local_costmap/robot_base_frame" type="str" value="$(arg ns)/base_link" />
     <param name="local_costmap/laserscan/topic" type="str" value="$(arg ns)/base_scan" />
     <param name="local_costmap/laserscan/sensor_frame" type="str" value="$(arg ns)/base_scan" />
-    <param name="controller_frequency" value="10.0" />
+    <!-- <param name="controller_frequency" value="10.0" /> -->
   </node>
 
   <!-- **************************** Explorer ****************************-->
