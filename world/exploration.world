@@ -1,7 +1,5 @@
 include "turtlebot.inc"
 
-#paused 1
-
 define floorplan model
 (
   # sombre, sensible, artistic
@@ -21,13 +19,12 @@ define floorplan model
 resolution 0.02
 interval_sim 100  # simulation timestep in milliseconds
 
-# configure the GUI window
-window
+window # configure the GUI window
 (
   size [ 1124 490 ] # in pixels
-  scale 268.660   # pixels per meter
   center [ -2.883  -4.846 ]
   rotate [ 67.500  -32.500 ]
+  scale 268.660   # pixels per meter
 
   show_data 1              # 1=on 0=off
 )
