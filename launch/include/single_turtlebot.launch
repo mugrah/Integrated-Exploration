@@ -46,7 +46,8 @@
     <param name="xmax" value="1.0"/>
     <param name="ymax" value="1.0"/>
 
-    <remap from="scan" to="base_scan"/>
+    <!-- <remap from="scan" to="base_scan"/> -->
+    <remap from="scan" to="base_scan_filtered"/>
   </node>
 
   <!-- **************************** move_base ****************************-->
@@ -106,10 +107,12 @@
 
     <!-- <remap from="cmd_vel" to="navigation_velocity_smoother/raw_cmd_vel"/> -->
     <remap from="odom" to="$(arg odom_topic)"/>
-    <remap from="scan" to="base_scan"/>
+    <!-- <remap from="scan" to="base_scan"/> -->
+    <remap from="scan" to="base_scan_filtered"/>
   </node>
 
-
+  <!-- Move base -->
+  <node name="laser_filter" pkg="pioneer3at" type="laser_filter.py" output="screen" />
 
   <!-- Move base -->
   <!-- <include file="$(find turtlebot_navigation)/launch/includes/move_base.launch.xml"/> -->
