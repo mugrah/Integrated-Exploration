@@ -2,9 +2,9 @@ define hokuyolaser ranger
 (
   sensor
   (
-    range_max 5.0
-    fov 180
-    samples 360
+    range_max 5.6
+    fov 240
+    samples 480
   )
   # generic model properties
   color "blue"
