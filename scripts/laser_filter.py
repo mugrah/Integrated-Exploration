@@ -2,6 +2,7 @@
 import rospy
 import sys
 import message_filters
+from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import LaserScan
 import math
@@ -13,10 +14,13 @@ class LaserFilter:
     def __init__(self):
         self.laser_pub = rospy.Publisher('base_scan_filtered', LaserScan, queue_size=10)
 
+        self.vel_sub = rospy.Subscriber('cmd_vel', Twist, self.velCb)
         self.odom_sub = message_filters.Subscriber('base_pose_ground_truth', Odometry)
         self.laser_sub = message_filters.Subscriber('base_scan', LaserScan)
         self.ts = message_filters.TimeSynchronizer([self.odom_sub, self.laser_sub], 10) # syncronize topics
         self.ts.registerCallback(self.odomLaserCb)
+
+        self.vel = Twist()
         
 
     def buildLaserMsg(self, old_laser, new_laser):
@@ -25,100 +29,54 @@ class LaserFilter:
         new_scan.ranges = new_laser # with ranges transformed
         return new_scan
     
+    def velCb(self, velocity):
+        self.vel = velocity
+
 
     def odomLaserCb(self, odom_data, laser_data):
-        scans = np.empty(len(laser_data.ranges), dtype=np.float32)
         updated = np.zeros(len(laser_data.ranges), dtype=np.int8)
         drift_theta = 11.0
-        drift_x = 1.0
-        drift_y = 0.0
+        drift_linear = 0.1
+
+        scans = np.roll(laser_data.ranges, 0) # turn lasers into numpy array
 
         # avoid processing when robot is not moving
-        if not(odom_data.twist.twist.linear.x == 0 and
-            odom_data.twist.twist.linear.y == 0 and
-            odom_data.twist.twist.angular.z == 0):
-
-            # drift related with speed
-            drift_x *= odom_data.twist.twist.linear.x
-            drift_y *= odom_data.twist.twist.linear.y
-            scans = np.zeros(len(laser_data.ranges))
-            
+        if odom_data.twist.twist.angular.z != 0:
             idx_drift = int(round(odom_data.twist.twist.angular.z * drift_theta))
-            # # filter linear velocity
-            # for i in range(0, len(laser_data.ranges)):
-            #     if laser_data.ranges[i] < laser_data.range_max:
-            #         # convert to cartesian
-            #         x_laser = laser_data.ranges[i] * np.cos(i*laser_data.angle_increment+laser_data.angle_min)
-            #         y_laser = laser_data.ranges[i] * np.sin(i*laser_data.angle_increment+laser_data.angle_min)
-            #         # do the filtering
-            #         x = x_laser + drift_x
-            #         y = y_laser + drift_y
-            #         # new range
-            #         scans[i] = math.sqrt(x*x + y*y)
-            # filter angular velocity
-            # scans = np.roll(scans, idx_drift)
             scans = np.roll(laser_data.ranges, idx_drift)
-            # erase rays out of index
-            if idx_drift >= 0 :
-                for i in range(0, idx_drift):
-                    scans[i] = laser_data.range_max
-            else :
-                for i in range(idx_drift, 0):
-                    scans[i] = laser_data.range_max
 
-            # scans.fill(2.0)
+        if odom_data.twist.twist.linear.x != 0  or odom_data.twist.twist.linear.y != 0 :
+            drift_linear *= -self.vel.linear.x
+            aux_scans = scans.copy()
 
-            # for i in range(0, len(scans)):
-            #     # convert to cartesian
-            #     x_laser = scans[i] * np.cos(i*laser_data.angle_increment+laser_data.angle_min)
-            #     y_laser = scans[i] * np.sin(i*laser_data.angle_increment+laser_data.angle_min)
-            #     # do the filtering
-            #     x = x_laser + drift_x
-            #     y = y_laser + drift_y
-            #     # new range
-            #     scans[i] = math.sqrt(x*x + y*y)
+            for i in range(0, len(aux_scans)):
+                if aux_scans[i] >= laser_data.range_max:
+                    updated[i] = 1 # mark the updated indexes
+                    continue    
+                x = aux_scans[i] * np.cos(i*laser_data.angle_increment+laser_data.angle_min) - drift_linear
+                y = aux_scans[i] * np.sin(i*laser_data.angle_increment+laser_data.angle_min)
 
-            # for i in range(0, len(laser_data.ranges)):
-            #     # convert to cartesian
-            #     x_laser = laser_data.ranges[i] * np.cos(i*laser_data.angle_increment)
-            #     y_laser = laser_data.ranges[i] * np.sin(i*laser_data.angle_increment)
+                idx = int(round((math.atan2(y, x) - laser_data.angle_min) / laser_data.angle_increment))
+                scans[idx] = math.sqrt(x*x + y*y)
+                updated[idx] = 1 # mark the updated indexes
 
-            #     # do the filtering
-            #     x = x_laser*np.cos(drift_theta) - y_laser*np.sin(drift_theta)
-            #     y = x_laser*np.sin(drift_theta) + y_laser*np.cos(drift_theta)
-            #     x += drift_x
-            #     y += drift_y
+            for i in range(0, len(updated)): # deal with rays not updated
+                if updated[i] == 1:
+                    continue # updated
+                if i == 0: # first
+                    next_id = scans[i+1]
+                    prev_id = scans[-1]
+                elif i == (len(updated)-1): # last
+                    next_id = scans[0]
+                    prev_id = scans[-2]
+                else:
+                    next_id = scans[i+1]
+                    prev_id = scans[i-1]
 
-            #     # go back to polar
-            #     ang = math.atan2(y, x)
-            #     # print(ang)
-            #     # if ang < 0: # negative radians
-            #     #     ang += 2*math.pi
-            #     # TODO: cut angles
-            #     if ang < laser_data.angle_max and ang > laser_data.angle_min : # laser is not out of fov
-            #         # idx = ang*(len(scans))/(laser_data.angle_max - laser_data.angle_min)  # convert angle into index
-            #         # new_idx = (int(round(idx)) % len(scans)) # circular array
-            #         new_idx = int(round(ang / laser_data.angle_increment))
-                    
-            #         new_range = math.sqrt(x*x + y*y)
+                update_scan = (next_id + prev_id) / 2
+                if abs(update_scan - scans[i]) < 2*drift_linear:
+                    scans[i] = update_scan
 
-            #         if new_range > laser_data.range_max-0.1: # fine adjust to remove "numerial error"
-            #             new_range = laser_data.range_max
-                    
-            #         scans[new_idx] = new_range
-            #         updated[new_idx] = 1 # mark the updated indexes
-
-            # for j in range(0, len(updated)): # deal with rays not updated
-            #     if updated[j] == 0:
-            #         if j == 0:
-            #             scans[j] = (scans[j+1] + scans[len(updated)-1])/2
-            #         elif j == (len(updated)-1):
-            #             scans[j] = (scans[0] + scans[j-1])/2
-            #         else:
-            #             scans[j] = (scans[j+1] + scans[j-1])/2
-
-        else: # do nothing
-            scans = laser_data.ranges
         self.laser_pub.publish(self.buildLaserMsg(laser_data, scans))
 
 

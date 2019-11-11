@@ -3,23 +3,24 @@ define hokuyolaser ranger
   sensor
   (
     range_max 5.6
-    fov 240
-    samples 480
+    fov 360
+    samples 720
   )
   # generic model properties
   color "blue"
-  size [ 0.07 0.07 0.05 ] # dimensions from LMS200 datasheet 
+  size [ 0.05 0.05 0.05 ]
 )
 
 define turtlebot position
 (
   pose [ 0.0 0.0 0.0 0.0 ]
 
-  odom_error [0.03 0.03 0 0 0 0.02]
+  localization "gps"
+  # odom_error [0.03 0.03 0 0 0 0.02]
 
   size [ 0.35 0.35 0.10 ]
   origin [ 0.0 0.0 0.0 0.0 ]
-  gui_nose 1
+  # gui_nose 1
   drive "diff"
   
   block( # this block approximates the circular shape of a turtlebot
@@ -45,5 +46,5 @@ define turtlebot position
 
   color "gray"
   
-  hokuyolaser(pose [ 0.0 0.0 0.0 0.0 ])
+  hokuyolaser(pose [ 0.0 0.0 0.1 0.0 ])
 )

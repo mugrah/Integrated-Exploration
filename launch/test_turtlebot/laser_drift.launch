@@ -56,17 +56,17 @@
   </node> -->
 
 
-  <arg name="urdf_file" default="$(find xacro)/xacro --inorder '$(find pioneer3at)/urdf/kobuki_hexagons_r200.urdf.xacro'"/>
-  <param name="robot_description" command="$(arg urdf_file)"/>
+<!--   <arg name="urdf_file" default="$(find xacro)/xacro --><!--inorder '$(find pioneer3at)/urdf/kobuki_hexagons_r200.urdf.xacro'"/>
+  <param name="robot_description" command="$(arg urdf_file)"/> -->
   <!-- important generally, but specifically utilised by the current app manager -->  
-  <param name="robot/name" value="$(optenv ROBOT turtlebot)"/>
+  <!--<param name="robot/name" value="$(optenv ROBOT turtlebot)"/>
   <param name="robot/type" value="turtlebot"/>
   <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
     <param name="publish_frequency" type="double" value="5.0" />
   </node>
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
     <param name="use_gui" value="false"/>
-  </node>
+  </node> -->
 
 
   <!-- Command Velocity multiplexer -->

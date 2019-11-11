@@ -10,6 +10,7 @@ define floorplan model
 
   gui_nose 0
   gui_grid 0
+  gui_move 0
   gui_outline 0
   gripper_return 0
   fiducial_return 0
@@ -21,10 +22,10 @@ interval_sim 100  # simulation timestep in milliseconds
 
 window # configure the GUI window
 (
-  size [ 1124 490 ] # in pixels
-  center [ -2.883  -4.846 ]
-  rotate [ 67.500  -32.500 ]
-  scale 268.660   # pixels per meter
+  size [ 700 700 ] # in pixels
+  center [ 0 0 ]
+  rotate [ 0  0 ]
+  scale 41   # pixels per meter
 
   show_data 1              # 1=on 0=off
 )
@@ -33,7 +34,7 @@ window # configure the GUI window
 floorplan
 (
   name "cave"
-  size [16.000 16.000 0.800]
+  size [15.0 15.0 0.5]
   pose [0.000 0.000 0.000 0.000]
   bitmap "bitmaps/cave.png"
 )
@@ -41,14 +42,14 @@ floorplan
 # spawn robots
 turtlebot
 (
-  pose [ -2.228 -5.262 0.000 -151.707 ]
+  pose [ -2.0 -7.0 0.0 0.0 ]
   name "r0"
   color "black"
 )
 
 turtlebot
 (
-  pose [ -1.228 -5.262 0.000 -151.707 ]
+  pose [ -1.0 -7.0 0.0 0.0 ]
   name "r1"
   color "black"
 )
