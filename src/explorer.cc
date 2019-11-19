@@ -22,6 +22,7 @@
 #include <actionlib/client/simple_action_client.h>
 #include <actionlib_msgs/GoalStatusArray.h>
 #include <move_base_msgs/MoveBaseActionGoal.h>
+#include <move_base_msgs/MoveBaseActionResult.h>
 #include <nav_msgs/GetMap.h>
 #include <tf/transform_listener.h>
 #include <tf/LinearMath/Matrix3x3.h>
@@ -55,7 +56,7 @@ ros::Publisher goal_pub;
 ros::Publisher cmd_vel_pub;
 
 ros::Subscriber map_sub;
-ros::Subscriber goal_status_sub;
+ros::Subscriber goal_result_sub;
 ros::Subscriber pose_sub;
 ros::Subscriber cmd_vel_sub;
 ros::Subscriber laser_sub;
@@ -84,9 +85,9 @@ mapPose m_goal;
 geometry_msgs::PoseStamped r_goal;
 
 int flowStatus;
-
+int goal_result = 0;
 int map_pose_count = 0;
-
+bool initialized = false;
 /*****************************************
 *                                        *
 *               CALLBACKS                *
@@ -95,8 +96,8 @@ int map_pose_count = 0;
 
 
 void ros_pose_CallBack(nav_msgs::Odometry pose)
-{
-    if(robot_topic.compare("/robot_0") == 0){
+{   // wait for the first map
+    if(robot_topic.compare("/robot_0") == 0 && r_map.map.info.resolution > 0){
         tf::StampedTransform transform;
         tf::TransformListener listener;
 
@@ -115,11 +116,10 @@ void ros_pose_CallBack(nav_msgs::Odometry pose)
         // saveOdomPose(o_pose, robot_topic);
 
         if(flowStatus == SET_NEW_GOAL){
+            goal_result = 0;
             // ROS_ERROR_STREAM("PUBLISH NEW GOAL");
-
             save_map_pose(r_map, m_pose, robot_topic, map_pose_count++);
             r_goal = setNewGoal(&r_map, pose, m_pose, &transform, a_beta, b_beta, alpha, beta, gama);
-            
             
             if(r_goal.pose.position.z == -1){
                 std::ofstream myfile;
@@ -133,12 +133,12 @@ void ros_pose_CallBack(nav_msgs::Odometry pose)
             }
 
             goal_pub.publish(r_goal);
-
+            ROS_INFO("OOO Goal set");
             m_goal = goal2map(&r_goal, &r_map, &transform, robot_topic);
 
             save_map_goal(r_map, m_pose, m_goal, robot_topic, map_pose_count);
 
-            flowStatus++;
+            flowStatus = GOAL_SET;
         }
     }
 
@@ -147,21 +147,20 @@ void ros_pose_CallBack(nav_msgs::Odometry pose)
 void ros_map_Callback(pioneer3at::OccMap map)
 {
     r_map = map;
-    
-    if(flowStatus == NEW_MAP){
-        save_map_simple(map, robot_topic);
-        flowStatus++;
-    } else if (flowStatus == GOAL_SET) {
-        // if((!verify_if_goal_is_frontier(r_map, m_goal)) || (verify_if_goal_is_near(r_pose, r_goal))){
-        if(verify_if_goal_is_near(r_pose, r_goal)){
-            ROS_ERROR_STREAM("NOT FRONTIER");
-            flowStatus = NEW_MAP;
-        }
-
+    if(flowStatus == GOAL_SET){
+        flowStatus = NEW_MAP;
+        ROS_INFO("OOO New map");
     }
-
 }
 
+void goal_result_CallBack(move_base_msgs::MoveBaseActionResult result)
+{
+    if(flowStatus == NEW_MAP && result.status.status >= 2){
+        ROS_INFO("OOO Goal reached");
+        save_map_simple(r_map, robot_topic);
+        flowStatus = SET_NEW_GOAL;
+    }
+}
 
 /*****************************************
 *                                        *
@@ -192,8 +191,6 @@ int main( int argc, char* argv[] )
     n_.getParam("beta", beta);
     n_.getParam("gama", gama);
 
-    flowStatus = NEW_MAP;
-
     std::ofstream myfile;
     std::string package = ros::package::getPath("pioneer3at");
     std::string filename = package + "/maps/" + robot_topic +"_time.txt";
@@ -205,7 +202,9 @@ int main( int argc, char* argv[] )
 
     map_sub = n.subscribe(occ_map_topic, 1, ros_map_Callback);
     pose_sub = n.subscribe(pose_topic, 1, ros_pose_CallBack);
+    goal_result_sub = n.subscribe("move_base/result", 1, goal_result_CallBack);
 
+    // flowStatus = NEW_MAP;
+    flowStatus = SET_NEW_GOAL;
     ros::spin();
-
 }

@@ -1,27 +1,7 @@
 <?xml version="1.0"?>
 <launch>
   <arg name="ns" default="robot_0"/>
-
-    <!-- **************************** tf for Gmapping **************************** -->
-  <!-- <node pkg="tf" type="static_transform_publisher" name="laserscan_tf" args="0.2 0 0.35 0 0 0 /$(arg ns)/base_link /$(arg ns)/base_scan 33" /> -->
-
   <!-- **************************** gmapping ****************************-->
-<!--   <node pkg="gmapping" type="slam_gmapping" name="gmapping">
-    <rosparam file="$(find pioneer3at)/config/gmapping/gmapping_stage.yaml" command="load" />
-    <param name="base_frame" type="str" value="/$(arg ns)/base_link" />
-    <param name="map_frame" type="str" value="/$(arg ns)/map" />
-    <param name="odom_frame" type="str" value="/$(arg ns)/odom" />
-    <param name="occ_map_frame" type="str" value="/$(arg ns)/occ_map" />
-    <remap from="scan"          to="/$(arg ns)/base_scan"/>
-  </node> -->
-
-  <!-- TODO: check if is necessary to declare a real sensor -->
-  <!-- <arg name="scan_topic"  default="base_laser_link" />
-  <arg name="base_frame"  default="base_footprint"/>
-  <arg name="map_frame"   default="map"/>
-  <arg name="odom_frame"  default="odom"/>
-  <arg name="occ_map_frame"  default="occ_map"/> -->
-
   <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">
     <param name="base_frame" value="/$(arg ns)/base_footprint"/>
     <param name="map_frame" value="/$(arg ns)/map"/>
@@ -36,13 +16,6 @@
     <param name="linearUpdate" value="0.5"/>
     <param name="angularUpdate" value="0.436"/>
     <param name="particles" value="10"/>
-  <!--
-    <param name="xmin" value="-50.0"/>
-    <param name="ymin" value="-50.0"/>
-    <param name="xmax" value="50.0"/>
-    <param name="ymax" value="50.0"/>
-  make the starting size small for the benefit of the Android client's memory...
-  -->
     <param name="xmin" value="-1.0"/>
     <param name="ymin" value="-1.0"/>
     <param name="xmax" value="1.0"/>
@@ -54,34 +27,6 @@
   </node>
 
   <!-- **************************** move_base ****************************-->
-  <!-- <node pkg="move_base" type="move_base" name="move_base" output="screen">
-    <rosparam file="$(find pioneer3at)/config/move_base/move_base_stage.yaml" command="load"/>
-    <rosparam file="$(find pioneer3at)/config/move_base/costmap_common_stage.yaml" command="load" ns="global_costmap" />
-    <rosparam file="$(find pioneer3at)/config/move_base/costmap_common_stage.yaml" command="load" ns="local_costmap" />
-    <rosparam file="$(find pioneer3at)/config/move_base/costmap_global_stage.yaml" command="load"  />
-    <rosparam file="$(find pioneer3at)/config/move_base/costmap_local_stage.yaml" command="load"/>
-
-    <param name="move_base/global_frame_id" type="str" value="map" />
-    <param name="global_costmap/global_frame" type="str" value="map" />
-    <param name="local_costmap/global_frame" type="str" value="map" />
-    <param name="global_costmap/map_topic" type="str" value="$(arg ns)/map" />
-    <param name="local_costmap/map_topic" type="str" value="$(arg ns)/map" />
-    <param name="global_costmap/robot_base_frame" type="str" value="base_link" />
-    <param name="global_costmap/laserscan/topic" type="str" value="$(arg ns)/base_scan" />
-    <param name="global_costmap/laserscan/sensor_frame" type="str" value="$(arg ns)/base_scan" />
-    <param name="local_costmap/robot_base_frame" type="str" value="base_link" />
-    <param name="local_costmap/laserscan/topic" type="str" value="$(arg ns)/base_scan" />
-    <param name="local_costmap/laserscan/sensor_frame" type="str" value="$(arg ns)/base_scan" />
-  </node> -->
-
-
-<!-- 
-    ROS navigation stack with velocity smoother and safety (reactive) controller
--->
-
-  <!-- <include file="$(find turtlebot_navigation)/launch/includes/velocity_smoother.launch.xml"/>
-  <include file="$(find turtlebot_navigation)/launch/includes/safety_controller.launch.xml"/> -->
-  
   <arg name="odom_frame_id"   default="odom"/>
   <arg name="base_frame_id"   default="base_footprint"/>
   <arg name="global_frame_id" default="map"/>
@@ -94,10 +39,10 @@
     <rosparam file="$(find turtlebot_navigation)/param/costmap_common_params.yaml" command="load" ns="local_costmap" />   
     <rosparam file="$(find turtlebot_navigation)/param/local_costmap_params.yaml" command="load" />   
     <rosparam file="$(find turtlebot_navigation)/param/global_costmap_params.yaml" command="load" />
-    <rosparam file="$(find turtlebot_navigation)/param/dwa_local_planner_params.yaml" command="load" />
+    <rosparam file="$(find pioneer3at)/param/dwa_local_planner_params.yaml" command="load" />
     <rosparam file="$(find turtlebot_navigation)/param/move_base_params.yaml" command="load" />
-    <rosparam file="$(find turtlebot_navigation)/param/global_planner_params.yaml" command="load" />
-    <rosparam file="$(find turtlebot_navigation)/param/navfn_global_planner_params.yaml" command="load" />
+    <rosparam file="$(find pioneer3at)/param/global_planner_params.yaml" command="load" />
+    <rosparam file="$(find pioneer3at)/param/navfn_global_planner_params.yaml" command="load" />
     <!-- external params file that could be loaded into the move_base namespace -->
     <rosparam file="$(arg custom_param_file)" command="load" />
     

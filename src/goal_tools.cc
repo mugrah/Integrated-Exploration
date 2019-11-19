@@ -64,7 +64,7 @@ geometry_msgs::PoseStamped publishGoal(nav_msgs::Odometry pose, int maxUtility, 
     r_goal.header.frame_id = map->map.header.frame_id;
     r_goal.header.stamp = ros::Time::now();
 
-    ROS_ERROR_STREAM("frame " << r_goal.header.frame_id << "  stamp " << r_goal.header.stamp);
+    ROS_INFO("Goal frame: %s, stamp: %f", r_goal.header.frame_id.data(), r_goal.header.stamp.toSec());
 
     r_goal.pose.position.x = x + ((xGoalMap*map->map.info.resolution)+map->map.info.origin.position.x) - transform->getOrigin().x();
     r_goal.pose.position.y = y + (((map->map.info.height-yGoalMap)*map->map.info.resolution) + map->map.info.origin.position.y) - transform->getOrigin().y();
@@ -90,7 +90,7 @@ geometry_msgs::PoseStamped setNewGoal(pioneer3at::OccMap *map, nav_msgs::Odometr
     r_goal.pose.position.z = -1;
 
     frontiers = createFrontiers(map);
-    ROS_ERROR_STREAM(frontiers.size());
+    ROS_INFO("Number of frontiers: %lu", frontiers.size());
     if (frontiers.size() > 0){
         distCost = calculate_cost_map(map, m_pose);
     //    infGain = calculate_inf_map(map, m_pose);
@@ -100,8 +100,6 @@ geometry_msgs::PoseStamped setNewGoal(pioneer3at::OccMap *map, nav_msgs::Odometr
     }
     
     return r_goal;
-
-
 }
 
 bool verify_if_goal_is_frontier(pioneer3at::OccMap map, mapPose m_goal) {
