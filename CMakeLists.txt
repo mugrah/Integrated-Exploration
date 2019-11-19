@@ -7,6 +7,7 @@ find_package(catkin REQUIRED COMPONENTS
         nav_msgs 
         tf
         message_generation
+        roslib
 )
 
 #######################
@@ -55,7 +56,7 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES p2os_urdf
-  CATKIN_DEPENDS roscpp sensor_msgs nav_msgs tf message_runtime cv_bridge
+  CATKIN_DEPENDS roscpp sensor_msgs nav_msgs tf message_runtime cv_bridge roslib
 #  DEPENDS system_lib
 )
 

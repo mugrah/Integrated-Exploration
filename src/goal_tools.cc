@@ -86,18 +86,18 @@ geometry_msgs::PoseStamped setNewGoal(pioneer3at::OccMap *map, nav_msgs::Odometr
     uFunction.assign(map->data.size(), 0.0);
 
     mapPose m_goal;
-    
+    geometry_msgs::PoseStamped r_goal;
+    r_goal.pose.position.z = -1;
+
     frontiers = createFrontiers(map);
     ROS_ERROR_STREAM(frontiers.size());
-
-    distCost = calculate_cost_map(map, m_pose);
-//    infGain = calculate_inf_map(map, m_pose);
-//    coordCost = calculate_coord_map(map, m_pose);
-    maxUtility = utilityFunction(height, width, a_beta, b_beta, alpha, beta, gama);
-    
-    geometry_msgs::PoseStamped r_goal;
-    
-    r_goal = publishGoal(pose, maxUtility, map, transform);
+    if (frontiers.size() > 0){
+        distCost = calculate_cost_map(map, m_pose);
+    //    infGain = calculate_inf_map(map, m_pose);
+    //    coordCost = calculate_coord_map(map, m_pose);
+        maxUtility = utilityFunction(height, width, a_beta, b_beta, alpha, beta, gama);
+        r_goal = publishGoal(pose, maxUtility, map, transform);
+    }
     
     return r_goal;
 

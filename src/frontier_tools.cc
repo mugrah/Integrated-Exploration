@@ -56,9 +56,6 @@ void save_frontiers(pioneer3at::OccMap map, std::vector<frontier_data> frontier_
 }
 
 
-
-
-
 int check_if_frontier(pioneer3at::OccMap *map, unsigned int x, unsigned int y){
     int flag = 0;
     unsigned int it;

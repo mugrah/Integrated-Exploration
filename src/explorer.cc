@@ -120,7 +120,17 @@ void ros_pose_CallBack(nav_msgs::Odometry pose)
             save_map_pose(r_map, m_pose, robot_topic, map_pose_count++);
             r_goal = setNewGoal(&r_map, pose, m_pose, &transform, a_beta, b_beta, alpha, beta, gama);
             
-            ROS_ERROR_STREAM("before publishing - " << r_goal.header.frame_id);
+            
+            if(r_goal.pose.position.z == -1){
+                std::ofstream myfile;
+                std::string package = ros::package::getPath("pioneer3at");
+                std::string filename = package + "/maps/" + robot_topic +"_time.txt";
+                myfile.open (filename.c_str(),  std::ios::out | std::ios::app );
+                myfile << ros::Time::now();
+                myfile.close();
+                std::string cmd = "rosnode kill Explorer";
+                system(cmd.c_str());
+            }
 
             goal_pub.publish(r_goal);
 
@@ -183,6 +193,13 @@ int main( int argc, char* argv[] )
     n_.getParam("gama", gama);
 
     flowStatus = NEW_MAP;
+
+    std::ofstream myfile;
+    std::string package = ros::package::getPath("pioneer3at");
+    std::string filename = package + "/maps/" + robot_topic +"_time.txt";
+    myfile.open (filename.c_str(),  std::ios::out | std::ios::app );
+    myfile << ros::Time::now()<<"\n";
+    myfile.close();
     
     goal_pub = n.advertise<geometry_msgs::PoseStamped>(goal_topic, 1);
 
