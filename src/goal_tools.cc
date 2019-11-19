@@ -27,7 +27,7 @@ int utilityFunction(int height, int width, double a_beta, double b_beta, double 
             // if(distCost[i] != -1.0)
                 // distCost[i] = pow(distCost[i], (a_beta-1.0))*pow((1.0-distCost[i]), (b_beta-1.0));
         unsigned int i = frontiers[j].center;
-        
+        distCost[i] = pow(distCost[i], (a_beta-1.0))*pow((1.0-distCost[i]), (b_beta-1.0));
         uFunction[i] = beta*distCost[i] /*+ alpha*infGain[i] + gama*coordCost[i]*/;
         
         

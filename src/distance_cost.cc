@@ -1,9 +1,12 @@
 #include "pioneer3at/OccMap.h"
 #include "utils.h"
+#include "ros/package.h"
 
 #define MAP_FREE 99999.0
 
 int count_wave = 0;
+
+
 
 void save_map_wave(pioneer3at::OccMap map, std::vector<double>  aux)
 {
@@ -13,7 +16,9 @@ void save_map_wave(pioneer3at::OccMap map, std::vector<double>  aux)
              map.map.info.resolution);
     char sysCall[512];
 
-    std::string mapdatafile = "/home/alves/ros_workspaces/poc_ws/src/pioneer3at/maps/wave_" + boost::to_string(count_wave++);
+    
+    std::string package = ros::package::getPath("pioneer3at");
+    std::string mapdatafile = package + "/maps/wave_" + boost::to_string(count_wave++);
     sprintf(sysCall, "%s.ppm", mapdatafile.c_str());
     FILE* printFile = fopen(sysCall, "w");
     fprintf(printFile, "P6\n # particles.ppm \n %d %d\n", map.map.info.width, map.map.info.height);
