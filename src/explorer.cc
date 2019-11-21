@@ -24,6 +24,7 @@
 #include <move_base_msgs/MoveBaseActionGoal.h>
 #include <move_base_msgs/MoveBaseActionResult.h>
 #include <nav_msgs/GetMap.h>
+#include <nav_msgs/GetPlan.h>
 #include <tf/transform_listener.h>
 #include <tf/LinearMath/Matrix3x3.h>
 #include <geometry_msgs/Quaternion.h>
@@ -60,6 +61,8 @@ ros::Subscriber goal_result_sub;
 ros::Subscriber pose_sub;
 ros::Subscriber cmd_vel_sub;
 ros::Subscriber laser_sub;
+
+ros::ServiceClient path_srv;
 
 std::string robot_topic;
 std::string goal_topic;
@@ -119,7 +122,7 @@ void ros_pose_CallBack(nav_msgs::Odometry pose)
             goal_result = 0;
             // ROS_ERROR_STREAM("PUBLISH NEW GOAL");
             save_map_pose(r_map, m_pose, robot_topic, map_pose_count++);
-            r_goal = setNewGoal(&r_map, pose, m_pose, &transform, a_beta, b_beta, alpha, beta, gama);
+            r_goal = setNewGoal(&r_map, pose, m_pose, &transform, a_beta, b_beta, alpha, beta, gama, path_srv);
             
             if(r_goal.pose.position.z == -1){
                 std::ofstream myfile;
@@ -203,6 +206,8 @@ int main( int argc, char* argv[] )
     map_sub = n.subscribe(occ_map_topic, 1, ros_map_Callback);
     pose_sub = n.subscribe(pose_topic, 1, ros_pose_CallBack);
     goal_result_sub = n.subscribe("move_base/result", 1, goal_result_CallBack);
+
+    path_srv = n.serviceClient<nav_msgs::GetPlan>("move_base/make_plan");
 
     // flowStatus = NEW_MAP;
     flowStatus = SET_NEW_GOAL;
