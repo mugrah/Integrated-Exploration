@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <launch>
   <arg name="ns" default="robot_0"/>
+  <arg name="alpha" default="0.5"/>
+  <arg name="beta" default="0.5"/>
   <!-- **************************** gmapping ****************************-->
   <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">
     <param name="base_frame" value="/$(arg ns)/base_footprint"/>
@@ -73,7 +75,14 @@
     <param name="map_topic" type="str" value="/$(arg ns)/map" />
     <param name="pose_topic" type="str" value="/$(arg ns)/odom" />
     <param name="base_link_topic" type="str" value="/$(arg ns)/base_link" />
-    <rosparam file="$(find pioneer3at)/config/explorer/test.yaml" command="load" />
+    <!-- <rosparam file="$(find pioneer3at)/config/explorer/test.yaml" command="load" /> -->
+    <!-- Substitute file params to cmd_line params -->
+    <param name="alpha" type="double" value="$(arg alpha)" />
+    <param name="beta" type="double" value="$(arg beta)" />
+    <param name="gama" type="double" value="0.0" />
+    <param name="a_beta" type="double" value="3.0" />
+    <param name="b_beta" type="double" value="9.0" />
+    <param name="robot_radius" type="double" value="0.2" />
   </node>
 
   <!-- **************************** Turtlebot ****************************-->

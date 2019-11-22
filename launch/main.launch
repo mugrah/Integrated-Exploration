@@ -4,6 +4,8 @@
     <arg name="rviz" default="true"/>
     <arg name="robot0" default="true" />
     <arg name="robot1" default="false" />
+    <arg name="alpha" default="0.5" />
+    <arg name="beta" default="0.5" />
 
     <param name="use_sim_time" value="true"/>
 
@@ -16,6 +18,8 @@
         <group ns="robot_0">
             <include file="$(find pioneer3at)/launch/include/single_turtlebot.launch">
                 <arg name="ns" value="robot_0"/>
+                <arg name="alpha" default="$(arg alpha)"/>
+                <arg name="beta" default="$(arg beta)"/>
             </include>
         </group>
     </group>

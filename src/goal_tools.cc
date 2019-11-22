@@ -71,7 +71,7 @@ int utilityFunction(std::vector<double> distances, double alpha, double beta){ /
     return best_utility_idx;
 }
 
-geometry_msgs::PoseStamped publishGoal(pioneer3at::OccMap *map, int max_utility_idx){
+geometry_msgs::PoseStamped mountGoal(pioneer3at::OccMap *map, int max_utility_idx){
     geometry_msgs::PoseStamped r_goal;
     
     r_goal.header.frame_id = map->map.header.frame_id;
@@ -83,7 +83,7 @@ geometry_msgs::PoseStamped publishGoal(pioneer3at::OccMap *map, int max_utility_
     return r_goal;
 }
 
-geometry_msgs::PoseStamped setNewGoal(pioneer3at::OccMap *map, nav_msgs::Odometry pose, mapPose m_pose, tf::StampedTransform *transform, int a_beta, int b_beta, double alpha, double beta, double gama, ros::ServiceClient path_srv){
+bool setNewGoal(pioneer3at::OccMap *map, nav_msgs::Odometry pose, mapPose m_pose, tf::StampedTransform *transform, int a_beta, int b_beta, double alpha, double beta, double gama, ros::ServiceClient path_srv, ros::Publisher goal_pub, double robot_radius){
     int height = map->map.info.height;
     int width = map->map.info.width;
     int max_utility_idx;
@@ -94,53 +94,53 @@ geometry_msgs::PoseStamped setNewGoal(pioneer3at::OccMap *map, nav_msgs::Odometr
     uFunction.assign(map->data.size(), 0.0);
 
     mapPose m_goal;
-    geometry_msgs::PoseStamped r_goal;
-    r_goal.pose.position.z = -1;
+    geometry_msgs::PoseStamped new_goal;
 
-    frontiers = createFrontiers(map);
+    frontiers = createFrontiers(map, robot_radius);
     ROS_INFO("Number of frontiers: %lu", frontiers.size());
-    if (frontiers.size() > 0){
-        normDist.resize(frontiers.size());
-        for(int i = 0; i < frontiers.size(); i++){
-            dest.position.x = frontiers[i].x_mean * map->map.info.resolution + map->map.info.origin.position.x;
-            dest.position.y = (map->map.info.height - frontiers[i].y_mean) * map->map.info.resolution + map->map.info.origin.position.y;
-            dest.orientation.w = 1.0;
-            // normDist[i] = 
-            frontier_path = mountGetPlanMsg(map->map.header.frame_id, pose.pose.pose, dest);
-            if(path_srv.call(frontier_path)){
-                normDist[i] = frontier_path.response.plan.poses.size();
-                ROS_INFO("Intermediate Plan Size: %f", normDist[i]);
-                // full_path.insert(full_path.end(), frontier_path.response.plan.poses.begin(), frontier_path.response.plan.poses.end());
-            }
-            else{
-                ROS_ERROR("Failed to call make_plan service in frontier %i", i);
-                // return false;
-            }
-        }
-        
-        dist_min = normDist[0];
-        dist_max = normDist[0];
-        for(int i = 1; i < normDist.size(); i++){ // get max e min values
-            if(normDist[i] < dist_min){
-                dist_min = normDist[i];
-            }
-            if(normDist[i] > dist_max){
-                dist_max = normDist[i];
-            }
-        }
-
-        for(int i = 0; i < normDist.size(); i++){ // get distance normalized
-            normDist[i] = (normDist[i] - dist_min)/(dist_max - dist_min);
-        }
-    
-    //    infGain = calculate_inf_map(map, m_pose);
-    //    coordCost = calculate_coord_map(map, m_pose);
-        // maxUtility = utilityFunction(height, width, a_beta, b_beta, alpha, beta, gama);
-        max_utility_idx = utilityFunction(normDist, alpha, beta);
-        r_goal = publishGoal(map, max_utility_idx);
+    if (frontiers.size() == 0){
+        return false; // no more frontiers
     }
     
-    return r_goal;
+    normDist.resize(frontiers.size());
+    for(int i = 0; i < frontiers.size(); i++){ // evaluate path distance from frontiers
+        dest.position.x = frontiers[i].x_mean * map->map.info.resolution + map->map.info.origin.position.x;
+        dest.position.y = (map->map.info.height - frontiers[i].y_mean) * map->map.info.resolution + map->map.info.origin.position.y;
+        dest.orientation.w = 1.0;
+        // normDist[i] = 
+        frontier_path = mountGetPlanMsg(map->map.header.frame_id, pose.pose.pose, dest);
+        if(path_srv.call(frontier_path)){
+            normDist[i] = frontier_path.response.plan.poses.size();
+        }
+        else{
+            ROS_ERROR("Failed to call make_plan service in frontier %i", i);
+            // return false;
+        }
+    }
+    
+    dist_min = normDist[0];
+    dist_max = normDist[0];
+    for(int i = 1; i < normDist.size(); i++){ // get max e min values
+        if(normDist[i] < dist_min){
+            dist_min = normDist[i];
+        }
+        if(normDist[i] > dist_max){
+            dist_max = normDist[i];
+        }
+    }
+
+    for(int i = 0; i < normDist.size(); i++){ // normalize the distance
+        normDist[i] = (normDist[i] - dist_min)/(dist_max - dist_min);
+    }
+
+   // infGain = calculate_inf_map(map, m_pose);
+//    coordCost = calculate_coord_map(map, m_pose);
+    // maxUtility = utilityFunction(height, width, a_beta, b_beta, alpha, beta, gama);
+    max_utility_idx = utilityFunction(normDist, alpha, beta);
+    new_goal = mountGoal(map, max_utility_idx);
+    goal_pub.publish(new_goal);
+
+    return true;
 }
 
 bool verify_if_goal_is_frontier(pioneer3at::OccMap map, mapPose m_goal) {

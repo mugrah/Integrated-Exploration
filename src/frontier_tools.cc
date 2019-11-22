@@ -56,65 +56,49 @@ void save_frontiers(pioneer3at::OccMap map, std::vector<frontier_data> frontier_
 }
 
 
-int check_if_frontier(pioneer3at::OccMap *map, unsigned int x, unsigned int y){
-    int flag = 0;
-    unsigned int it;
+bool check_if_frontier(pioneer3at::OccMap *map, int front_x, int front_y, double robot_rad){
+    bool flag = false;
+    int idx, x, y;
     int height = map->map.info.height;
     int width = map->map.info.width;
+    int rad = int(robot_rad / map->map.info.resolution); // robot_radius metric to grid_map
+    // ROS_INFO("ROBOT RADIUS: %i", rad);
+    
+    for(int i = -rad; i < rad; i++){ // check if exist none obstacle cell
+        for(int j = -rad; j < rad; j++){
+            x = j + front_x; // ROS map representation -> common matrix
+            y = (height-1) - (i + front_y);
+            if(x < 0 || x > width || y < 0 || y > height){ // check out of range
+                continue;
+            }
+            idx = y * width + x; // matrix -> vector
+            if(map->map.data[idx] == 100){
+                return false; // if obstacle
+            }
+            // else if(map->data[idx] == -1){
+            //     flag = true; // if unknown
+            // }
+        }
+    }
 
-    it = x-1 + (height - y-1 - 1) * width;
-    // ROS_ERROR_STREAM(map->data[it]);
-    if((map->data[it] > 0 && map->data[it] < 1) || (map->data[it] == -1))
-        flag = 1;
-    else if (map->map.data[it] == +100)
-        return 0;
+    for(int i = -1; i <= 1; i++){ // check if exist at least one unknown adjacent cell
+        for(int j = -1; j <= 1; j++){
+            x = j + front_x; // ROS map representation -> common matrix
+            y = (height-1) - (i + front_y);
+            if(x < 0 || x > width || y < 0 || y > height){ // check out of range
+                continue;
+            }
+            idx = y * width + x; // matrix -> vector
+            if(map->data[idx] == -1){
+                flag = true; // if unknown
+            }
+        }
+    }
 
-    it = x-1 + (height - y - 1) * width;
-    if((map->data[it] > 0 && map->data[it] < 1) || (map->data[it] == -1))
-        flag = 1;
-    else if (map->map.data[it] == +100)
-        return 0;
-
-    it = x-1 + (height - y+1 - 1) * width;
-    if((map->data[it] > 0 && map->data[it] < 1) || (map->data[it] == -1))
-        flag = 1;
-    else if (map->map.data[it] == +100)
-        return 0;
-
-    it = x + (height - y-1 - 1) * width;
-    if((map->data[it] > 0 && map->data[it] < 1) || (map->data[it] == -1))
-        flag = 1;
-    else if (map->map.data[it] == +100)
-        return 0;
-
-    it = x + (height - y+1 - 1) * width;
-    if((map->data[it] > 0 && map->data[it] < 1) || (map->data[it] == -1))
-        flag = 1;
-    else if (map->map.data[it] == +100)
-        return 0;
-
-    it = x+1 + (height - y-1 - 1) * width;
-    if((map->data[it] > 0 && map->data[it] < 1) || (map->data[it] == -1))
-        flag = 1;
-    else if (map->map.data[it] == +100)
-        return 0;
-
-    it = x+1 + (height - y - 1) * width;
-    if((map->data[it] > 0 && map->data[it] < 1) || (map->data[it] == -1))
-        flag = 1;
-    else if (map->map.data[it] == +100)
-        return 0;
-
-    it = x+1 + (height - y+1 - 1) * width;
-    if((map->data[it] > 0 && map->data[it] < 1) || (map->data[it] == -1))
-        flag = 1;
-    else if (map->map.data[it] == +100)
-        return 0;
-      
     return flag;
 }
 
-std::vector<frontier_data> createFrontiers(pioneer3at::OccMap *map){
+std::vector<frontier_data> createFrontiers(pioneer3at::OccMap *map, double robot_radius){
   
     int flag;
     int height = map->map.info.height;
@@ -122,11 +106,11 @@ std::vector<frontier_data> createFrontiers(pioneer3at::OccMap *map){
 
     std::vector<frontier_data> frontier_vector;
 
-    for(unsigned int y = 1; y < height-1; y++) {
-        for(unsigned int x = 1; x < width-1; x++) {
-            unsigned int i = x + (height - y - 1) * width;
+    for(int y = 0; y < height; y++) {
+        for(int x = 0; x < width; x++) {
+            int i = x + (height - y - 1) * width;
             if(map->map.data[i] == 0){
-                if(check_if_frontier(map, x, y)){
+                if(check_if_frontier(map, x, y, robot_radius)){
                     if(frontier_vector.size()==0){
                         frontier_data aux;
                         aux.num = 1;
