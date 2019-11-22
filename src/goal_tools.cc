@@ -8,12 +8,15 @@
 #include "distance_cost.cc"
 #include "frontier_tools.cc"
 
+typedef struct cost{
+    int frontier_idx;
+    double value;
+}cost;
 
-std::vector<double> distCost;
-std::vector<double> normDist;
-std::vector<double> infGain;
-std::vector<double> coordCost;
-std::vector<double> uFunction;
+// std::vector<double> distCost;
+// std::vector<double> infGain;
+// std::vector<double> coordCost;
+// std::vector<double> uFunction;
 std::vector<frontier_data> frontiers;
 
 nav_msgs::GetPlan mountGetPlanMsg(std::string frame_map, geometry_msgs::Pose orig, geometry_msgs::Pose dest){
@@ -58,14 +61,14 @@ nav_msgs::GetPlan mountGetPlanMsg(std::string frame_map, geometry_msgs::Pose ori
 // }
 
 
-int utilityFunction(std::vector<double> distances, double alpha, double beta){ // return the index of the best frontier
+int utilityFunction(std::list<cost> dist_cost, double alpha, double beta){ // return the index of the best frontier
     double utility, best_utility = 0.0;
     int best_utility_idx = 0;
-    for(int i = 0; i < distances.size(); i++){
-        utility = pow(distances[i], (alpha-1.0))*pow((1.0-distances[i]), (beta-1.0));
+    for (std::list<cost>::iterator it = dist_cost.begin(); it != dist_cost.end(); ++it){
+        utility = pow(it->value, (alpha-1.0))*pow((1.0-it->value), (beta-1.0));
         if(utility > best_utility){
             best_utility = utility;
-            best_utility_idx = i;
+            best_utility_idx = it->frontier_idx;
         }
     }
     return best_utility_idx;
@@ -83,17 +86,15 @@ geometry_msgs::PoseStamped mountGoal(pioneer3at::OccMap *map, int max_utility_id
     return r_goal;
 }
 
-bool setNewGoal(pioneer3at::OccMap *map, nav_msgs::Odometry pose, mapPose m_pose, tf::StampedTransform *transform, int a_beta, int b_beta, double alpha, double beta, double gama, ros::ServiceClient path_srv, ros::Publisher goal_pub, double robot_radius){
+bool setNewGoal(pioneer3at::OccMap *map, nav_msgs::Odometry pose, mapPose m_pose, tf::StampedTransform *transform, int a_beta, int b_beta, double alpha, double beta, double gama, std::string path_srv_name, ros::Publisher goal_pub, double robot_radius){
     int height = map->map.info.height;
     int width = map->map.info.width;
     int max_utility_idx;
     float dist_min = 0, dist_max;
     nav_msgs::GetPlan frontier_path;
     geometry_msgs::Pose dest;
-
-    uFunction.assign(map->data.size(), 0.0);
-
-    mapPose m_goal;
+    std::list<cost> dist_cost;
+    cost cost_aux;
     geometry_msgs::PoseStamped new_goal;
 
     frontiers = createFrontiers(map, robot_radius);
@@ -102,41 +103,47 @@ bool setNewGoal(pioneer3at::OccMap *map, nav_msgs::Odometry pose, mapPose m_pose
         return false; // no more frontiers
     }
     
-    normDist.resize(frontiers.size());
     for(int i = 0; i < frontiers.size(); i++){ // evaluate path distance from frontiers
         dest.position.x = frontiers[i].x_mean * map->map.info.resolution + map->map.info.origin.position.x;
         dest.position.y = (map->map.info.height - frontiers[i].y_mean) * map->map.info.resolution + map->map.info.origin.position.y;
         dest.orientation.w = 1.0;
-        // normDist[i] = 
         frontier_path = mountGetPlanMsg(map->map.header.frame_id, pose.pose.pose, dest);
-        if(path_srv.call(frontier_path)){
-            normDist[i] = frontier_path.response.plan.poses.size();
+        ros::service::waitForService(path_srv_name, 5000);
+        if(ros::service::call(path_srv_name, frontier_path)){
+            if(frontier_path.response.plan.poses.size() > 0){
+                cost_aux.frontier_idx = i;
+                cost_aux.value = frontier_path.response.plan.poses.size();
+                dist_cost.push_back(cost_aux);
+            }
         }
         else{
             ROS_ERROR("Failed to call make_plan service in frontier %i", i);
             // return false;
         }
     }
+    if(dist_cost.empty()){ // didn't find any valid path
+        return false;
+    }
+
+    dist_min = dist_cost.front().value; // finding the min e max values
+    dist_max = dist_cost.front().value;
+    for (std::list<cost>::iterator it = dist_cost.begin(); it != dist_cost.end(); ++it){
+        if(it->value < dist_min){
+            dist_min = it->value;
+        }
+        if(it->value > dist_max){
+            dist_max = it->value;
+        }
+    }
+
+    for (std::list<cost>::iterator it = dist_cost.begin(); it != dist_cost.end(); ++it){
+        it->value = (it->value - dist_min)/(dist_max - dist_min); // normalize the distance
+    }
     
-    dist_min = normDist[0];
-    dist_max = normDist[0];
-    for(int i = 1; i < normDist.size(); i++){ // get max e min values
-        if(normDist[i] < dist_min){
-            dist_min = normDist[i];
-        }
-        if(normDist[i] > dist_max){
-            dist_max = normDist[i];
-        }
-    }
-
-    for(int i = 0; i < normDist.size(); i++){ // normalize the distance
-        normDist[i] = (normDist[i] - dist_min)/(dist_max - dist_min);
-    }
-
    // infGain = calculate_inf_map(map, m_pose);
 //    coordCost = calculate_coord_map(map, m_pose);
     // maxUtility = utilityFunction(height, width, a_beta, b_beta, alpha, beta, gama);
-    max_utility_idx = utilityFunction(normDist, alpha, beta);
+    max_utility_idx = utilityFunction(dist_cost, alpha, beta);
     new_goal = mountGoal(map, max_utility_idx);
     goal_pub.publish(new_goal);
 

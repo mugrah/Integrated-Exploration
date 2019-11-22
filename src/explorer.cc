@@ -266,7 +266,7 @@ ros::Subscriber pose_sub;
 ros::Subscriber cmd_vel_sub;
 ros::Subscriber laser_sub;
 
-ros::ServiceClient path_srv;
+// ros::ServiceClient path_srv;
 
 std::string robot_topic;
 std::string goal_topic;
@@ -326,13 +326,14 @@ void ros_pose_CallBack(nav_msgs::Odometry pose){   // wait for the first map
             goal_status = 0;
             // ROS_ERROR_STREAM("PUBLISH NEW GOAL");
             // save_map_pose(r_map, m_pose, robot_topic, map_pose_count++);
-            goal_published = setNewGoal(&r_map, pose, m_pose, &transform, a_beta, b_beta, alpha, beta, gama, path_srv, goal_pub, robot_radius);
+            goal_published = setNewGoal(&r_map, pose, m_pose, &transform, a_beta, b_beta, alpha, beta, gama, "move_base/make_plan", goal_pub, robot_radius);
             if(goal_published == false){
                 std::ofstream myfile;
                 std::string package = ros::package::getPath("pioneer3at");
                 std::string filename = package + "/maps/" + robot_topic +"_time.txt";
                 myfile.open (filename.c_str(),  std::ios::out | std::ios::app );
-                myfile << ros::Time::now();
+                // myfile << ros::Time::now();
+                myfile << alpha << " " << beta << " " << ros::Time::now()<<"\n";
                 myfile.close();
                 std::string cmd = "rosnode kill Explorer"; // kill node
                 system(cmd.c_str());
@@ -382,12 +383,12 @@ int main( int argc, char* argv[] )
     n_.getParam("gama", gama);
     n_.getParam("robot_radius", robot_radius);
 
-    std::ofstream myfile;
-    std::string package = ros::package::getPath("pioneer3at");
-    std::string filename = package + "/maps/" + robot_topic +"_time.txt";
-    myfile.open (filename.c_str(),  std::ios::out | std::ios::app );
-    myfile << ros::Time::now()<<"\n";
-    myfile.close();
+    // std::ofstream myfile;
+    // std::string package = ros::package::getPath("pioneer3at");
+    // std::string filename = package + "/maps/" + robot_topic +"_time.txt";
+    // myfile.open (filename.c_str(),  std::ios::out | std::ios::app );
+    // myfile << alpha << " " << beta << " " << ros::Time::now()<<"\n";
+    // myfile.close();
     
     goal_pub = n.advertise<geometry_msgs::PoseStamped>(goal_topic, 1);
 
@@ -395,7 +396,7 @@ int main( int argc, char* argv[] )
     pose_sub = n.subscribe(pose_topic, 1, ros_pose_CallBack);
     goal_result_sub = n.subscribe("move_base/result", 1, goal_result_CallBack);
 
-    path_srv = n.serviceClient<nav_msgs::GetPlan>("move_base/make_plan");
+    // path_srv = n.serviceClient<nav_msgs::GetPlan>("move_base/make_plan");
 
     ros::spin();
 }
