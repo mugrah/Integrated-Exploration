@@ -15,9 +15,9 @@
     <param name="maxRange" value="5.5"/>
     <!-- <param name="kernelSize" value="3" /> -->
     <param name="minimumScore" value="200"/>
-    <param name="linearUpdate" value="0.5"/>
-    <param name="angularUpdate" value="0.436"/>
-    <param name="particles" value="10"/>
+    <param name="linearUpdate" value="0.4"/>
+    <param name="angularUpdate" value="0.4"/>
+    <param name="particles" value="20"/>
     <param name="xmin" value="-1.0"/>
     <param name="ymin" value="-1.0"/>
     <param name="xmax" value="1.0"/>
@@ -91,6 +91,12 @@
   <param name="robot_description" command="$(arg urdf_file)"/>
 
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"/>
+
+  <!-- ******* Save the path made ******* -->
+  <node name="path_saver" pkg="pioneer3at" type="traveled_distance.py" output="screen" >
+    <param name="step" type="double" value="0.5"/>
+    <param name="file_name" type="str" value="$(find pioneer3at)/debug/$(arg ns)_$(arg alpha)_$(arg beta)_path.txt"/>
+  </node>
 
   <!-- <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
     <param name="publish_frequency" type="double" value="5.0" />

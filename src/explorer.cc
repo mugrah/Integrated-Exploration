@@ -330,7 +330,7 @@ void ros_pose_CallBack(nav_msgs::Odometry pose){   // wait for the first map
             if(goal_published == false){
                 std::ofstream myfile;
                 std::string package = ros::package::getPath("pioneer3at");
-                std::string filename = package + "/maps/" + robot_topic +"_time.txt";
+                std::string filename = package + "/debug/" + robot_topic +"_time.txt";
                 myfile.open (filename.c_str(),  std::ios::out | std::ios::app );
                 // myfile << ros::Time::now();
                 myfile << alpha << " " << beta << " " << ros::Time::now()<<"\n";
