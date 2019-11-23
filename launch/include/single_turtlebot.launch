@@ -55,7 +55,7 @@
     <param name="local_costmap/robot_base_frame" value="/$(arg ns)/base_footprint"/>
     <param name="DWAPlannerROS/global_frame_id" value="/$(arg ns)/map"/>
 
-    <!-- <remap from="cmd_vel" to="navigation_velocity_smoother/raw_cmd_vel"/> -->
+    <remap from="cmd_vel" to="raw_cmd_vel"/>
     <remap from="odom" to="$(arg odom_topic)"/>
     <!-- <remap from="scan" to="base_scan"/> -->
     <remap from="scan" to="base_scan_filtered"/>
@@ -96,6 +96,15 @@
   <node name="path_saver" pkg="pioneer3at" type="traveled_distance.py" output="screen" >
     <param name="step" type="double" value="0.5"/>
     <param name="file_name" type="str" value="$(find pioneer3at)/debug/$(arg ns)_$(arg alpha)_$(arg beta)_path.txt"/>
+  </node>
+
+  <!-- ******* Apply potential field on cmd_vel based in the laser  ******* -->
+  <node name="cmd_vel_filter" pkg="pioneer3at" type="pot_field.py" output="screen" >
+    <param name="min_obstacle_range" type="double" value="0.6"/>
+    <param name="repulsive_gain" type="double" value="0.01"/>
+    <param name="holonomic" type="boolean" value="false"/>
+    <!-- for non holonomic robots -->
+    <param name="desai_const" type="double" value="3.0"/>
   </node>
 
   <!-- <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
