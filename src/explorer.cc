@@ -333,7 +333,7 @@ void ros_pose_CallBack(nav_msgs::Odometry pose){   // wait for the first map
                 std::string filename = package + "/debug/" + robot_topic +"_time.txt";
                 myfile.open (filename.c_str(),  std::ios::out | std::ios::app );
                 // myfile << ros::Time::now();
-                myfile << alpha << " " << beta << " " << ros::Time::now()<<"\n";
+                myfile << alpha << "," << beta << "," << ros::Time::now()<<"\n";
                 myfile.close();
                 std::string cmd = "rosnode kill Explorer"; // kill node
                 system(cmd.c_str());

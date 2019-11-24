@@ -100,7 +100,7 @@
 
   <!-- ******* Apply potential field on cmd_vel based in the laser  ******* -->
   <node name="cmd_vel_filter" pkg="pioneer3at" type="pot_field.py" output="screen" >
-    <param name="min_obstacle_range" type="double" value="0.6"/>
+    <param name="min_obstacle_range" type="double" value="0.5"/>
     <param name="repulsive_gain" type="double" value="0.01"/>
     <param name="holonomic" type="boolean" value="false"/>
     <!-- for non holonomic robots -->
