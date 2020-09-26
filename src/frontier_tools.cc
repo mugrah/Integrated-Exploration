@@ -105,7 +105,6 @@ std::vector<frontier_data> createFrontiers(pioneer3at::OccMap *map, double robot
     int width = map->map.info.width;    
 
     std::vector<frontier_data> frontier_vector;
-
     for(int y = 0; y < height; y++) {
         for(int x = 0; x < width; x++) {
             int i = x + (height - y - 1) * width;
@@ -152,7 +151,6 @@ std::vector<frontier_data> createFrontiers(pioneer3at::OccMap *map, double robot
         else
             j++;
     }
-
     double dist;
     double mindist;
     unsigned int it;

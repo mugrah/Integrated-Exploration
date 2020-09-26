@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <launch>
     <arg name="world_file" default="$(find pioneer3at)/world/exploration.world"/>
-    <arg name="rviz" default="true"/>
+    <arg name="rviz" default="false"/>
     <arg name="robot0" default="true" />
-    <arg name="robot1" default="false" />
-    <arg name="alpha" default="0.5" />
-    <arg name="beta" default="0.5" />
+    <arg name="robot1" default="true" />
+    <arg name="alpha" default="3" />
+    <arg name="beta" default="9" />
 
     <param name="use_sim_time" value="true"/>
 
@@ -28,6 +28,8 @@
         <group ns="robot_1">
             <include file="$(find pioneer3at)/launch/include/single_turtlebot.launch">
                 <arg name="ns" value="robot_1"/>
+                <arg name="alpha" default="$(arg alpha)"/>
+                <arg name="beta" default="$(arg beta)"/>
             </include>
         </group>
     </group>

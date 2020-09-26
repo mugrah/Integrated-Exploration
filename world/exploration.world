@@ -23,8 +23,8 @@ interval_sim 100  # simulation timestep in milliseconds
 window # configure the GUI window
 (
   size [ 700 700 ] # in pixels
-  center [ 0 0 ]
-  rotate [ 0  0 ]
+  center [ 0.0 0.0 ]
+  rotate [ 0.0  0.0 ]
   scale 41   # pixels per meter
 
   show_data 1              # 1=on 0=off
@@ -45,11 +45,15 @@ turtlebot
   pose [ -2.0 -7.0 0.0 0.0 ]
   name "r0"
   color "black"
+  fiducial_return 1
+  fiducial_key 10
 )
 
 turtlebot
 (
-  pose [ 0.0 -3.0 0.0 0.0 ]
+  pose [ 3.0 6.0 0.0 0.0 ]
   name "r1"
-  color "black"
+  color "red"
+  fiducial_return 2
+  fiducial_key 10
 )

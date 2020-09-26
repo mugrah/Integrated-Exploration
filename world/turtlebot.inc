@@ -11,12 +11,26 @@ define hokuyolaser ranger
   size [ 0.05 0.05 0.05 ]
 )
 
+define fiducial_sensor fiducial
+(
+  # fiducial properties
+  range_min 0.0
+  range_max 5.0
+  range_max_id 5.0
+  fov 360
+  ignore_zloc 1
+
+  # model properties
+  size [ 0.05 0.05 0.05 ]
+  fiducial_key 10
+)
+
 define turtlebot position
 (
   pose [ 0.0 0.0 0.0 0.0 ]
 
-  localization "gps"
-  # odom_error [0.03 0.03 0 0 0 0.02]
+  #localization "gps"
+  odom_error [0.03 0.03 0.0 0.0 0.0 0.02]
 
   size [ 0.35 0.35 0.10 ]
   origin [ 0.0 0.0 0.0 0.0 ]
@@ -41,10 +55,11 @@ define turtlebot position
     point[13] [ 0.086 -0.208 ]
     point[14] [ 0.159 -0.159 ]
     point[15] [ 0.208 -0.086 ]
-    z [0 0.1]
+    z [0.0 0.1]
   )
 
   color "gray"
   
   hokuyolaser(pose [ 0.0 0.0 0.1 0.0 ])
+  fiducial_sensor(pose [ 0.0 0.0 0.15 0.0 ])
 )

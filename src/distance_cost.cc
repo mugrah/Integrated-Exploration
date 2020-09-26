@@ -74,7 +74,7 @@ std::vector<double> wavefront(pioneer3at::OccMap *map, mapPose m_pose, double &m
         }
     }
 
-    save_map_wave(*map, aux);
+    // save_map_wave(*map, aux);
 
     // unsigned int ir;
     for(unsigned int y = m_pose.y - 5; y <= m_pose.y + 5; y++){
@@ -240,7 +240,7 @@ std::vector<double> wavefront(pioneer3at::OccMap *map, mapPose m_pose, double &m
             }
         }
     }
-    save_map_wave(*map, aux);
+    // save_map_wave(*map, aux);
     return aux;
 }
 
