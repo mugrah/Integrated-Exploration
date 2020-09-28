@@ -1,9 +1,10 @@
 <?xml version="1.0"?>
 <launch>
-    <arg name="world_file" default="$(find pioneer3at)/world/exploration.world"/>
+    <arg name="world_file" default="$(find pioneer3at)/world/exploration_3.world"/>
     <arg name="rviz" default="false"/>
     <arg name="robot0" default="true" />
     <arg name="robot1" default="true" />
+    <arg name="robot2" default="true" />
     <arg name="alpha" default="3" />
     <arg name="beta" default="9" />
 
@@ -28,6 +29,16 @@
         <group ns="robot_1">
             <include file="$(find pioneer3at)/launch/include/single_turtlebot.launch">
                 <arg name="ns" value="robot_1"/>
+                <arg name="alpha" default="$(arg alpha)"/>
+                <arg name="beta" default="$(arg beta)"/>
+            </include>
+        </group>
+    </group>
+
+    <group if="$(arg robot1)">
+        <group ns="robot_2">
+            <include file="$(find pioneer3at)/launch/include/single_turtlebot.launch">
+                <arg name="ns" value="robot_2"/>
                 <arg name="alpha" default="$(arg alpha)"/>
                 <arg name="beta" default="$(arg beta)"/>
             </include>

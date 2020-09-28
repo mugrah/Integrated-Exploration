@@ -17,12 +17,12 @@
     <param name="minimumScore" value="200"/>
     <param name="linearUpdate" value="0.4"/>
     <param name="angularUpdate" value="0.4"/>
-    <param name="temporalUpdate" value="5.0"/>
+    <param name="temporalUpdate" value="50.0"/>
     <param name="particles" value="20"/>
-    <param name="xmin" value="-1.0"/>
-    <param name="ymin" value="-1.0"/>
-    <param name="xmax" value="1.0"/>
-    <param name="ymax" value="1.0"/>
+    <param name="xmin" value="-2.0"/>
+    <param name="ymin" value="-2.0"/>
+    <param name="xmax" value="2.0"/>
+    <param name="ymax" value="2.0"/>
     <!-- <param name="delta" value="0.1"/> -->
 
     <!-- <remap from="scan" to="base_scan"/> -->
@@ -107,13 +107,13 @@
   </node>
 
   <!-- ******* Apply potential field on cmd_vel based in the laser  ******* -->
-  <node name="cmd_vel_filter" pkg="pioneer3at" type="pot_field.py" output="screen" >
+  <!-- <node name="cmd_vel_filter" pkg="pioneer3at" type="pot_field.py" output="screen" >
     <param name="min_obstacle_range" type="double" value="0.5"/>
     <param name="repulsive_gain" type="double" value="0.01"/>
-    <param name="holonomic" type="boolean" value="false"/>
+    <param name="holonomic" type="boolean" value="false"/> -->
     <!-- for non holonomic robots -->
-    <param name="desai_const" type="double" value="3.0"/>
-  </node>
+    <!-- <param name="desai_const" type="double" value="3.0"/>
+  </node> -->
 
   <!-- <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
     <param name="publish_frequency" type="double" value="5.0" />

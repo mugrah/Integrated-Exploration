@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import rospy
 import sys
+import copy
 import numpy as np
 
 from pioneer3at.msg import OccMap
@@ -37,7 +38,7 @@ class MapServer:
     def mergeMaps(self):
         aux = self.resizeMaps()
         pub_map = aux[self.ns_prefix]
-        for item in self.maps:
+        for item in aux:
             if item != self.ns_prefix:
                 pub_map = self.stichMaps(pub_map, aux[item])
         return pub_map
@@ -56,9 +57,9 @@ class MapServer:
 
     def resizeMaps(self):
         map_size = 1001
-        aux = {}
+        aux = copy.deepcopy(self.maps)
         for item in self.maps:
-            aux[item] = self.resizeMap(self.maps[item], map_size)
+            aux[item] = self.resizeMap(aux[item], map_size)
         return aux
 
     def getMapSize(self):
@@ -95,7 +96,7 @@ class MapServer:
         for i in range(0, o_height):
             for e in range(0, o_width):
                 t = (o_height - (o_height -i))*o_width + e
-                g = int((map_size - (map_size/2 - origin_y/resolution - i)- 1)*map_size + (map_size/2 - origin_x/resolution + e))
+                g = int((map_size - (map_size/2 - origin_y/resolution - i)- 1)*map_size + (map_size + origin_x/resolution + e))
                 aux.map.data[g] = new_map.map.data[t]
                 aux.data[g] = new_map.data[t]
         
@@ -105,10 +106,10 @@ class MapServer:
         for fiducial in fiducials.observations:
             robot_prefix = '/robot_' + str(fiducial.id - 1)
             self.fiducials[robot_prefix] = fiducial
-            self.maps[robot_prefix] = rospy.wait_for_message(robot_prefix + '/occ_map', OccMap)
+            self.maps[robot_prefix] = rospy.wait_for_message(robot_prefix + '/occ_gmapping', OccMap)
 
 def main(args):
-    rospy.init_node('map_server', anonymous=False, log_level=rospy.DEBUG)
+    rospy.init_node('map_server', anonymous=False, log_level=rospy.INFO)
     map_server = MapServer()
 
     try:
