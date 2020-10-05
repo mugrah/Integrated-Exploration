@@ -1,2 +1,6 @@
 .vscode
-maps/*
+maps
+src_copy
+debug/*
+arquivospioneer
+data

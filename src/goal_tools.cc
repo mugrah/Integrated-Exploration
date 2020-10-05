@@ -77,6 +77,7 @@ int utilityFunction(std::list<cost> dist_cost, std::list<cost> inf_gain, double 
     std::map<int, double> utility;
     double best_utility = 0.0;
     int best_utility_idx = 0;
+
     for (std::list<cost>::iterator it = dist_cost.begin(); it != dist_cost.end(); ++it){
         value = gama2 * it->value;
         auto m_it = utility.find(it->frontier_idx); 
@@ -101,6 +102,7 @@ int utilityFunction(std::list<cost> dist_cost, std::list<cost> inf_gain, double 
             best_utility = it->second;
             best_utility_idx = it->first;
         }
+
     }
     return best_utility_idx;
 }
@@ -178,6 +180,7 @@ std::list<cost> calculate_dist_cost(pioneer3at::OccMap *map, nav_msgs::Odometry 
             dist_max = it->value;
         }
     }
+    
 
     for (std::list<cost>::iterator it = dist_cost.begin(); it != dist_cost.end(); ++it){
         it->value = (it->value - dist_min)/(dist_max - dist_min); // normalize the distance

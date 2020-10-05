@@ -1,0 +1,25 @@
+metricas:
+- tempo
+- distancia individual
+- distancia coletiva
+- n planos
+- qualidade do mapa
+
+experimentos:
+- n robos - escalabilidade 1 .. x
+
+- distancia 
+    - estudo variaveis alfa e beta
+    - robos heterogeneos
+
+- informação
+    - normal x entropia
+
+- coordenação
+    - mapa individuais x mapa global
+    - etapa de planejamento
+        - assim que recebe um novo mapa
+        - apenas qndo terminar o planos
+        - timer
+    
+

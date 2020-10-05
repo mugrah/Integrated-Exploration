@@ -20,6 +20,7 @@ class TraveledDistance:
         dist = math.sqrt((newX-self.prevX) * (newX-self.prevX) + (newY-self.prevY) * (newY-self.prevY))
         if dist > self.step:
             self.file.write(str(newX) + " " + str(newY) + "\n")
+            self.file.flush()
             self.prevX = newX
             self.prevY = newY
 

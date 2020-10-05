@@ -177,7 +177,7 @@ std::vector<frontier_data> createFrontiers(pioneer3at::OccMap *map, double robot
             }
         }
     }
-    save_frontiers(*map, frontier_vector);
+    // save_frontiers(*map, frontier_vector);
 
     return frontier_vector;
 

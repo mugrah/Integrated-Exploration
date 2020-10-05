@@ -74,12 +74,24 @@ geometry_msgs::PoseStamped r_goal;
 
 int goal_status = 7;
 int map_pose_count = 0;
+int abort_run = 0;
 /*****************************************
 *                                        *
 *               CALLBACKS                *
 *                                        *
 *****************************************/
 
+void end_run(){
+    std::ofstream myfile;
+    std::string package = ros::package::getPath("pioneer3at");
+    std::string filename = package + "/maps/" + robot_topic +"_time.txt";
+    myfile.open (filename.c_str(),  std::ios::out | std::ios::app );
+    myfile << ros::Time::now();
+    // myfile << alpha << "," << beta << "," << ros::Time::now()<<"\n";
+    myfile.close();
+    std::string cmd = "rosnode kill Explorer"; // kill node
+    system(cmd.c_str());
+}
 
 void ros_pose_CallBack(nav_msgs::Odometry pose){   // wait for the first map
     bool goal_published;
@@ -96,27 +108,17 @@ void ros_pose_CallBack(nav_msgs::Odometry pose){   // wait for the first map
 
         m_pose = odom2map(&pose, &r_map, &transform, robot_topic);
 
-        // std::string file_path = ros::package::getPath("pioneer3at") + "/maps/test_map"; // save map
-        // std::string cmd = "rosrun map_server map_saver -f test_map";// + file_path;
-        // system(cmd.c_str());
-
         // saveMapPose(m_pose, robot_topic);
         // saveOdomPose(o_pose, robot_topic);
         if(goal_status > 2){
             // goal_status = 99;
             goal_status = 0;
-            // save_map_pose(r_map, m_pose, robot_topic, map_pose_count++);
+            // // save_map_pose(r_map, m_pose, robot_topic, map_pose_count++);
             goal_published = setNewGoal(&r_map, pose, m_pose, alpha, beta, gama1, gama2, gama3, "move_base/make_plan", goal_pub, robot_radius, n_size, sigma);
+            save_map_pose(r_map, m_pose, robot_topic, map_pose_count++);
+            // goal_published = false;
             if(goal_published == false){
-                std::ofstream myfile;
-                std::string package = ros::package::getPath("pioneer3at");
-                std::string filename = package + "/debug/" + robot_topic +"_time.txt";
-                myfile.open (filename.c_str(),  std::ios::out | std::ios::app );
-                // myfile << ros::Time::now();
-                myfile << alpha << "," << beta << "," << ros::Time::now()<<"\n";
-                myfile.close();
-                std::string cmd = "rosnode kill Explorer"; // kill node
-                system(cmd.c_str());
+                end_run();
             }
             // m_goal = goal2map(&r_goal, &r_map, &transform, robot_topic);
             // save_map_goal(r_map, m_pose, m_goal, robot_topic, map_pose_count);
@@ -131,6 +133,13 @@ void ros_map_Callback(pioneer3at::OccMap map){
 
 void goal_result_CallBack(move_base_msgs::MoveBaseActionResult result){
     goal_status = result.status.status;
+    if (goal_status == 4){
+        abort_run++;
+    }
+
+    if(abort_run == 3)
+        end_run();
+        
 }
 
 /*****************************************

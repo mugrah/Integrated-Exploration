@@ -82,7 +82,7 @@ std::vector<double> calculate_information_map(pioneer3at::OccMap *map, int n_siz
         inf[i] = (inf[i]-min)/(max-min)*510;
     }
 
-    save_info_map(map, inf);
+    // save_info_map(map, inf);
     
     return inf;
 

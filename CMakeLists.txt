@@ -71,37 +71,37 @@ add_executable(joint_state_publisher src/joint_state_publisher.cc)
 target_link_libraries(joint_state_publisher ${catkin_LIBRARIES} )
 add_dependencies(joint_state_publisher pioneer3at_generate_messages_cpp)
 
-add_executable(print_coords  src/print_coords.cc)
-target_link_libraries(print_coords  ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
-add_dependencies(print_coords pioneer3at_generate_messages_cpp)
+#add_executable(print_coords  src/print_coords.cc)
+#target_link_libraries(print_coords  ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+#add_dependencies(print_coords pioneer3at_generate_messages_cpp)
 
-add_executable(laserscan  src/laserscan.cc)
-target_link_libraries(laserscan  ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
-add_dependencies(laserscan pioneer3at_generate_messages_cpp)
+#add_executable(laserscan  src/laserscan.cc)
+#target_link_libraries(laserscan  ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+#add_dependencies(laserscan pioneer3at_generate_messages_cpp)
 
 add_executable(explorer  src/explorer.cc)
 target_link_libraries(explorer  ${catkin_LIBRARIES})
 add_dependencies(explorer pioneer3at_generate_messages_cpp)
 
-add_executable(map_node  src/map_node.cc)
-target_link_libraries(map_node  ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
-add_dependencies(map_node pioneer3at_generate_messages_cpp)
+#add_executable(map_node  src/map_node.cc)
+#target_link_libraries(map_node  ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+#add_dependencies(map_node pioneer3at_generate_messages_cpp)
 
-add_executable(map_node_icra  src/map_node_icra.cc)
-target_link_libraries(map_node_icra  ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
-add_dependencies(map_node_icra pioneer3at_generate_messages_cpp)
+#add_executable(map_node_icra  src/map_node_icra.cc)
+#target_link_libraries(map_node_icra  ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+#add_dependencies(map_node_icra pioneer3at_generate_messages_cpp)
 
-add_executable(new_map_node  src/new_map_node.cc)
-target_link_libraries(new_map_node  ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
-add_dependencies(new_map_node pioneer3at_generate_messages_cpp)
+#add_executable(new_map_node  src/new_map_node.cc)
+#target_link_libraries(new_map_node  ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+#add_dependencies(new_map_node pioneer3at_generate_messages_cpp)
 
-add_executable(map_node_real  src/map_node_real.cc)
-target_link_libraries(map_node_real  ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
-add_dependencies(map_node_real pioneer3at_generate_messages_cpp)
+#add_executable(map_node_real  src/map_node_real.cc)
+#target_link_libraries(map_node_real  ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+#add_dependencies(map_node_real pioneer3at_generate_messages_cpp)
 
-add_executable(image_save  src/image_save.cc)
-target_link_libraries(image_save  ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
-add_dependencies(image_save pioneer3at_generate_messages_cpp)
+#add_executable(image_save  src/image_save.cc)
+#target_link_libraries(image_save  ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+#add_dependencies(image_save pioneer3at_generate_messages_cpp)
 
 
 #############
@@ -126,12 +126,12 @@ install(TARGETS joint_state_publisher
 #                gazebo_bridge
 #                gazebo_laserscan
 #                frontier_explorer
-                print_coords
-                laserscan
+#                print_coords
+#                laserscan
 #                multi_frontier_explorer
 #                frontier_window_explorer
-                map_node
-                image_save
+#                map_node
+#                image_save
 #                minpos_explorer
 #                new_explorer
 #                new_explorer_ent
