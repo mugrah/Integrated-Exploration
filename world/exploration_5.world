@@ -45,7 +45,6 @@ turtlebot
   pose [ 0.0 -1.0 0.0 0.0 ]
   name "r0"
   color "black"
-  laser_return 1
   fiducial_return 1
   fiducial_key 10
 )
@@ -55,7 +54,33 @@ turtlebot
   pose [ 7.0 7.0 0.0 0.0 ]
   name "r1"
   color "red"
-  laser_return 1
   fiducial_return 2
+  fiducial_key 10
+)
+
+turtlebot
+(
+  pose [ -7.0 -7.0 0.0 0.0 ]
+  name "r2"
+  color "green"
+  fiducial_return 3
+  fiducial_key 10
+)
+
+turtlebot
+(
+  pose [ -7.0 4.0 0.0 0.0 ]
+  name "r3"
+  color "blue"
+  fiducial_return 4
+  fiducial_key 10
+)
+
+turtlebot
+(
+  pose [ 3.0 -7.0 0.0 0.0 ]
+  name "r3"
+  color "yellow"
+  fiducial_return 4
   fiducial_key 10
 )

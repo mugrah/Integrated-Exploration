@@ -118,5 +118,5 @@
     <param name="publish_frequency" type="double" value="5.0" />
   </node> -->
 
-  <node pkg="rviz" type="rviz" name="rviz" args="-d $(find pioneer3at)/rviz/$(arg ns).rviz"/>
+  <!-- <node pkg="rviz" type="rviz" name="rviz" args="-d $(find pioneer3at)/rviz/$(arg ns).rviz"/> -->
 </launch>

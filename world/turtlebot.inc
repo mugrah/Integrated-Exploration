@@ -9,6 +9,7 @@ define hokuyolaser ranger
   # generic model properties
   color "blue"
   size [ 0.05 0.05 0.05 ]
+  
 )
 
 define fiducial_sensor fiducial
@@ -59,7 +60,7 @@ define turtlebot position
   )
 
   color "gray"
-  
-  hokuyolaser(pose [ 0.0 0.0 0.1 0.0 ])
+
+  hokuyolaser(pose [ 0.0 0.0 -0.05 0.0 ])
   fiducial_sensor(pose [ 0.0 0.0 0.15 0.0 ])
 )

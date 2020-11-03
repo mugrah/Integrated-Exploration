@@ -42,6 +42,7 @@ ros::Subscriber goal_result_sub;
 ros::Subscriber pose_sub;
 ros::Subscriber cmd_vel_sub;
 ros::Subscriber laser_sub;
+ros::Subscriber action_sub;
 
 // ros::ServiceClient path_srv;
 
@@ -136,11 +137,12 @@ void goal_result_CallBack(move_base_msgs::MoveBaseActionResult result){
     if (goal_status == 4){
         abort_run++;
     }
-
+  
     if(abort_run == 3)
         end_run();
         
 }
+
 
 /*****************************************
 *                                        *
@@ -186,6 +188,7 @@ int main( int argc, char* argv[] )
     map_sub = n.subscribe(occ_map_topic, 1, ros_map_Callback);
     pose_sub = n.subscribe(pose_topic, 1, ros_pose_CallBack);
     goal_result_sub = n.subscribe("move_base/result", 1, goal_result_CallBack);
+
 
     // path_srv = n.serviceClient<nav_msgs::GetPlan>("move_base/make_plan");
 
