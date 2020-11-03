@@ -1,0 +1,11 @@
+{
+    "n_robot": 1,
+    "world": "exploration_1.world",
+    "alpha": -1,
+    "beta": -1,   
+    "gama1": 0.0,
+    "gama2": 1.0,
+    "gama3": 0.0,
+    "n_size": [1],
+    "sigma": [0.1]
+}
