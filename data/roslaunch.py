@@ -60,15 +60,15 @@ def main(config):
         specs['n_size'] = N_SIZE
     if specs['sigma'] == -1:
         specs['sigma'] = SIGMA
-        
-    for alpha, beta, n_size, sigma in zip(specs['alpha'], specs['beta'], specs['n_size'], specs['sigma']):
+    for n_robot, world_file in zip(specs['n_robot'], specs['world']):
+        for alpha, beta, n_size, sigma in zip(specs['alpha'], specs['beta'], specs['n_size'], specs['sigma']):
             for run in range(0,10):
                 config_dir = str(pathlib.Path().absolute()) + '/files/' + config.split('.')[0] + '/'
                 target_dir = config_dir + str(specs['n_robot']) + '_' + str(alpha) + '_' + str(beta) + '_' + str(n_size) + '_' + str(sigma) + '_' + str(run) + '/'
                 code = -1
                 if not os.path.exists(target_dir):
                     print(target_dir)
-                    code = run_roslaunch(specs['n_robot'], specs['world'], alpha, beta, specs['gama1'], specs['gama2'], specs['gama3'], n_size, sigma)
+                    code = run_roslaunch(n_robot, world_file, alpha, beta, specs['gama1'], specs['gama2'], specs['gama3'], n_size, sigma)
                 else:
                     maps = [f for f in glob.glob(target_dir + "/*.png")]
                     if len(maps) <= 1:
@@ -76,10 +76,10 @@ def main(config):
                         fl = glob.glob(target_dir + "*")
                         for f in fl:
                             os.remove(f)
-                        code = run_roslaunch(specs['n_robot'], specs['world'], alpha, beta, specs['gama1'], specs['gama2'], specs['gama3'], n_size, sigma)
+                        code = run_roslaunch(n_robot, world_file, alpha, beta, specs['gama1'], specs['gama2'], specs['gama3'], n_size, sigma)
                         
                 if code == 0:
-                    finish_run(config, specs['n_robot'], alpha, beta, n_size, sigma, run)
+                    finish_run(config, n_robot, alpha, beta, n_size, sigma, run)
     
 
 if __name__ == "__main__":

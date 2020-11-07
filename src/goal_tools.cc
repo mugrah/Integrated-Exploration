@@ -28,48 +28,7 @@ std::vector<frontier_data> frontiers;
 
 std::map<int, utility> utility_map; 
 
-nav_msgs::GetPlan mountGetPlanMsg(std::string frame_map, geometry_msgs::Pose orig, geometry_msgs::Pose dest){
-    nav_msgs::GetPlan srv_msg;
-    srv_msg.request.start.header.stamp = ros::Time::now();
-    srv_msg.request.start.header.frame_id = frame_map;
-    srv_msg.request.goal.header = srv_msg.request.start.header;
-
-    srv_msg.request.start.pose = orig;
-    srv_msg.request.goal.pose = dest;
-    srv_msg.request.tolerance = 0.1;
-    return srv_msg;
-}
-
-// int utilityFunction(int height, int width, double a_beta, double b_beta, double alpha, double beta, double gama){
-
-//     double max=0.0;
-//     unsigned int max_i;
-    
-//     // for(unsigned int y = 1; y < height; y++) {
-//         // for(unsigned int x = 1; x < width; x++) {
-//             // unsigned int i = x + (height - y - 1) * width;
-//     for(int j = 0; j < frontiers.size(); j++){
-//             // if(distCost[i] != -1.0)
-//                 // distCost[i] = pow(distCost[i], (a_beta-1.0))*pow((1.0-distCost[i]), (b_beta-1.0));
-//         unsigned int i = frontiers[j].center;
-//         // distCost[i] = pow(distCost[i], (a_beta-1.0))*pow((1.0-distCost[i]), (b_beta-1.0));
-//         uFunction[i] = beta*distCost[i] /*+ alpha*infGain[i] + gama*coordCost[i]*/;
-        
-        
-
-
-//         if(uFunction[i]>max){
-//             max=uFunction[i];
-//             max_i = i;
-//         }
-
-//         // }
-//     }
-//     return max_i;
-// }
-
-
-int utilityFunction(std::list<cost> dist_cost, std::list<cost> inf_gain, double gama1, double gama2, double gama3){ // return the index of the best frontier
+int utilityFunction(std::list<cost> dist_cost, std::list<cost> inf_gain, std::list<cost> coordination, double gama1, double gama2, double gama3){ // return the index of the best frontier
     // double utility, best_utility = 0.0;
     // double dist, inf, coord = 0.0;
     double value = 0.0;
@@ -97,14 +56,36 @@ int utilityFunction(std::list<cost> dist_cost, std::list<cost> inf_gain, double 
         }
     }
 
+    for (std::list<cost>::iterator it = coordination.begin(); it != coordination.end(); ++it){
+        value = gama3 * it->value;
+        auto m_it = utility.find(it->frontier_idx); 
+        if (m_it == utility.end()) {
+            utility.insert(std::make_pair(it->frontier_idx, -value));
+        } else {
+            m_it->second -= value;
+        }
+    }
+
     for(std::map<int, double>::iterator it = utility.begin(); it != utility.end(); ++it){
         if(it->second > best_utility){
             best_utility = it->second;
             best_utility_idx = it->first;
         }
-
     }
     return best_utility_idx;
+}
+
+
+nav_msgs::GetPlan mountGetPlanMsg(std::string frame_map, geometry_msgs::Pose orig, geometry_msgs::Pose dest){
+    nav_msgs::GetPlan srv_msg;
+    srv_msg.request.start.header.stamp = ros::Time::now();
+    srv_msg.request.start.header.frame_id = frame_map;
+    srv_msg.request.goal.header = srv_msg.request.start.header;
+
+    srv_msg.request.start.pose = orig;
+    srv_msg.request.goal.pose = dest;
+    srv_msg.request.tolerance = 0.1;
+    return srv_msg;
 }
 
 geometry_msgs::PoseStamped mountGoal(pioneer3at::OccMap *map, int max_utility_idx){
@@ -116,6 +97,80 @@ geometry_msgs::PoseStamped mountGoal(pioneer3at::OccMap *map, int max_utility_id
     r_goal.pose.position.y = (map->map.info.height - frontiers[max_utility_idx].y_mean) * map->map.info.resolution + map->map.info.origin.position.y;
     r_goal.pose.orientation.w = 1.0;
     return r_goal;
+}
+
+std::list<cost> calculate_coordination(pioneer3at::OccMap *map, std::vector<nav_msgs::Odometry> poses, std::string path_srv_name, double robot_radius, double alpha, double beta){
+    int height = map->map.info.height;
+    int width = map->map.info.width;
+    cost cost_aux;
+    std::list<cost> dist_cost_sum;
+    geometry_msgs::Pose dest;
+    nav_msgs::GetPlan frontier_path;
+    float dist_min = 0, dist_max;
+    double max=0.0;
+    std::vector<double> wavefront_map;
+
+    for (int i = 0; i < poses.size(); i++){
+
+        mapPose m_pose = odom2map(&poses[i], map);
+
+        wavefront_map = wavefront(map, m_pose, max);
+
+        std::list<cost> dist_cost;
+
+        for(int i = 0; i < frontiers.size(); i++){ // evaluate path distance from frontiers
+            unsigned int ic = frontiers[i].x_mean + (height - frontiers[i].y_mean - 1) * width;
+            cost_aux.frontier_idx = i;
+            cost_aux.value = wavefront_map[ic];
+            dist_cost.push_back(cost_aux);
+        }
+
+        dist_min = dist_cost.front().value; // finding the min e max values
+        dist_max = dist_cost.front().value;
+        for (std::list<cost>::iterator it = dist_cost.begin(); it != dist_cost.end(); ++it){
+            if(it->value < dist_min){
+                dist_min = it->value;
+            }
+            if(it->value > dist_max){
+                dist_max = it->value;
+            }
+        }
+    
+        for (std::list<cost>::iterator it = dist_cost.begin(); it != dist_cost.end(); ++it){
+            it->value = (it->value - dist_min)/(dist_max - dist_min); // normalize the distance
+            it->value = pow(it->value, (alpha-1.0))*pow((1.0-it->value), (beta-1.0));
+        }
+
+        if (dist_cost_sum.size() == 0) {
+            dist_cost_sum = dist_cost;
+        } else {
+            for (std::list<cost>::iterator it = dist_cost.begin(); it != dist_cost.end(); ++it){
+                for (std::list<cost>::iterator et = dist_cost_sum.begin(); et != dist_cost_sum.end(); ++et){
+                    if (it->frontier_idx == et->frontier_idx){
+                        et->value += it->value;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    dist_min = dist_cost_sum.front().value; // finding the min e max values
+    dist_max = dist_cost_sum.front().value;
+    for (std::list<cost>::iterator it = dist_cost_sum.begin(); it != dist_cost_sum.end(); ++it){
+        if(it->value < dist_min){
+            dist_min = it->value;
+        }
+        if(it->value > dist_max){
+            dist_max = it->value;
+        }
+    }
+    for (std::list<cost>::iterator it = dist_cost_sum.begin(); it != dist_cost_sum.end(); ++it){
+        it->value = (it->value - dist_min)/(dist_max - dist_min); // normalize the distance
+    }
+
+    return dist_cost_sum;
+
 }
 
 std::list<cost> calculate_dist_cost(pioneer3at::OccMap *map, nav_msgs::Odometry pose, mapPose m_pose, std::string path_srv_name, double robot_radius, double alpha, double beta){
@@ -245,9 +300,10 @@ std::list<cost> calculate_inf_gain(pioneer3at::OccMap *map, int n_size, double s
     return inf_gain;
 }
 
-bool setNewGoal(pioneer3at::OccMap *map, nav_msgs::Odometry pose, mapPose m_pose, int alpha, int beta, double gama1, double gama2, double gama3, std::string path_srv_name, ros::Publisher goal_pub, double robot_radius, int n_size, double sigma){
+bool setNewGoal(pioneer3at::OccMap *map, nav_msgs::Odometry pose, mapPose m_pose, std::vector<nav_msgs::Odometry> other_poses, int alpha, int beta, double gama1, double gama2, double gama3, std::string path_srv_name, ros::Publisher goal_pub, double robot_radius, int n_size, double sigma){
     std::list<cost> dist_cost;
     std::list<cost> inf_gain;
+    std::list<cost> coordination;
     int max_utility_idx;
     geometry_msgs::PoseStamped new_goal;
     
@@ -258,9 +314,10 @@ bool setNewGoal(pioneer3at::OccMap *map, nav_msgs::Odometry pose, mapPose m_pose
         return false;
     }
     inf_gain = calculate_inf_gain(map, n_size, sigma);
-//    coordCost = calculate_coord_map(map, m_pose);
-    // maxUtility = utilityFunction(height, width, a_beta, b_beta, alpha, beta, gama);
-    max_utility_idx = utilityFunction(dist_cost, inf_gain, gama1, gama2, gama3);
+
+    coordination = calculate_coordination(map, other_poses, path_srv_name, robot_radius, alpha, beta);
+
+    max_utility_idx = utilityFunction(dist_cost, inf_gain, coordination, gama1, gama2, gama3);
     new_goal = mountGoal(map, max_utility_idx);
     goal_pub.publish(new_goal);
 

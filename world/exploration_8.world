@@ -57,3 +57,57 @@ turtlebot
   fiducial_return 2
   fiducial_key 10
 )
+
+turtlebot
+(
+  pose [ -7.0 -7.0 0.0 0.0 ]
+  name "r2"
+  color "green"
+  fiducial_return 3
+  fiducial_key 10
+)
+
+turtlebot
+(
+  pose [ -7.0 4.0 0.0 0.0 ]
+  name "r3"
+  color "blue"
+  fiducial_return 4
+  fiducial_key 10
+)
+
+turtlebot
+(
+  pose [ 3.0 -7.0 0.0 0.0 ]
+  name "r4"
+  color "yellow"
+  fiducial_return 5
+  fiducial_key 10
+)
+
+turtlebot
+(
+  pose [ 0.0 7.0 0.0 0.0 ]
+  name "r5"
+  color "black"
+  fiducial_return 6
+  fiducial_key 10
+)
+
+turtlebot
+(
+  pose [ 6.5 -3.0 0.0 0.0 ]
+  name "r6"
+  color "green"
+  fiducial_return 7
+  fiducial_key 10
+)
+
+turtlebot
+(
+  pose [ 0.0 3.0 0.0 0.0 ]
+  name "r7"
+  color "red"
+  fiducial_return 8
+  fiducial_key 10
+)

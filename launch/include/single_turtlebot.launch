@@ -80,6 +80,7 @@
     <param name="map_topic" type="str" value="/$(arg ns)/map" />
     <param name="pose_topic" type="str" value="/$(arg ns)/odom" />
     <param name="base_link_topic" type="str" value="/$(arg ns)/base_link" />
+    <param name="fiducial_topic" type="str" value="/$(arg ns)/fiducials" />
     <!-- <rosparam file="$(find pioneer3at)/config/explorer/test.yaml" command="load" /> -->
     <!-- Substitute file params to cmd_line params -->
     <param name="alpha" type="double" value="$(arg alpha)" />

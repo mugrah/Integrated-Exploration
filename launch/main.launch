@@ -8,11 +8,13 @@
     <arg name="robot3" default="false" />
     <arg name="robot4" default="false" />
     <arg name="robot5" default="false" />
+    <arg name="robot6" default="false" />
+    <arg name="robot7" default="false" />
     <arg name="alpha" default="3" />
     <arg name="beta" default="9" />
-    <arg name="gama1" default="0.5" />
-    <arg name="gama2" default="0.5" />
-    <arg name="gama3" default="0.0" />
+    <arg name="gama1" default="0.3" />
+    <arg name="gama2" default="0.3" />
+    <arg name="gama3" default="0.3" />
     <arg name="n_size" default="1" />
     <arg name="sigma" default="0.1" />
 
@@ -102,6 +104,36 @@
         <group ns="robot_5">
             <include file="$(find pioneer3at)/launch/include/single_turtlebot.launch">
                 <arg name="ns" value="robot_5"/>
+                <arg name="alpha" default="$(arg alpha)"/>
+                <arg name="beta" default="$(arg beta)"/>
+                <arg name="gama1" default="$(arg gama1)"/>
+                <arg name="gama2" default="$(arg gama2)"/>
+                <arg name="gama3" default="$(arg gama3)"/>
+                <arg name="n_size" default="$(arg n_size)"/>
+                <arg name="sigma" default="$(arg sigma)"/>
+            </include>
+        </group>
+    </group>
+
+    <group if="$(arg robot6)">
+        <group ns="robot_6">
+            <include file="$(find pioneer3at)/launch/include/single_turtlebot.launch">
+                <arg name="ns" value="robot_6"/>
+                <arg name="alpha" default="$(arg alpha)"/>
+                <arg name="beta" default="$(arg beta)"/>
+                <arg name="gama1" default="$(arg gama1)"/>
+                <arg name="gama2" default="$(arg gama2)"/>
+                <arg name="gama3" default="$(arg gama3)"/>
+                <arg name="n_size" default="$(arg n_size)"/>
+                <arg name="sigma" default="$(arg sigma)"/>
+            </include>
+        </group>
+    </group>
+
+    <group if="$(arg robot7)">
+        <group ns="robot_7">
+            <include file="$(find pioneer3at)/launch/include/single_turtlebot.launch">
+                <arg name="ns" value="robot_7"/>
                 <arg name="alpha" default="$(arg alpha)"/>
                 <arg name="beta" default="$(arg beta)"/>
                 <arg name="gama1" default="$(arg gama1)"/>

@@ -24,6 +24,8 @@
 #include <vector>
 #include <stdio.h>
 
+#include <stage_ros/fiducials.h>
+
 #include "pioneer3at/OccMap.h"
 #include "utils.h"
 
@@ -43,6 +45,7 @@ ros::Subscriber pose_sub;
 ros::Subscriber cmd_vel_sub;
 ros::Subscriber laser_sub;
 ros::Subscriber action_sub;
+ros::Subscriber fiducial_sub;
 
 // ros::ServiceClient path_srv;
 
@@ -51,6 +54,7 @@ std::string goal_topic;
 std::string map_topic;
 std::string occ_map_topic;
 std::string pose_topic;
+std::string fiducial_topic;
 // std::string cmd_vel_topic;
 std::string base_link_topic;
 // std::string goal_status_topic;
@@ -72,10 +76,15 @@ mapPose m_pose;
 odomPose o_pose;
 mapPose m_goal;
 geometry_msgs::PoseStamped r_goal;
+std::vector<nav_msgs::Odometry> other_poses;
 
 int goal_status = 7;
 int map_pose_count = 0;
 int abort_run = 0;
+int fiducial_status = 3;
+
+double f_x, f_y;
+double f_dist = 0.0;
 /*****************************************
 *                                        *
 *               CALLBACKS                *
@@ -94,8 +103,52 @@ void end_run(){
     system(cmd.c_str());
 }
 
+void calc_dist(){
+    double x_new = r_pose.pose.pose.position.x;
+    double y_new = r_pose.pose.pose.position.y;
+    
+    f_dist += sqrt((x_new-f_x) * (x_new-f_x) + (y_new-f_y) * (y_new-f_y));
+    f_x = x_new;
+    f_y = y_new;
+    if (f_dist > 5.0){
+        fiducial_status = 2;
+    }
+
+}
+
+void ros_fiducial_Callback(stage_ros::fiducials fiducials){
+    
+    if (fiducial_status == 3){
+        f_x = r_pose.pose.pose.position.x;
+        f_y = r_pose.pose.pose.position.y;
+        fiducial_status = 2;
+    }
+    
+    if (goal_status > 2) {
+        calc_dist();
+        if (fiducial_status == 2){
+            other_poses.clear();
+            for (int i=0; i < fiducials.observations.size(); i++){
+
+                std::string topic = "/robot_" + std::to_string(fiducials.observations[i].id - 1) + "/odom";
+                boost::shared_ptr<nav_msgs::Odometry const> sharedaux;
+                nav_msgs::Odometry aux;
+                sharedaux = ros::topic::waitForMessage<nav_msgs::Odometry>(topic,ros::Duration(5));
+                if(sharedaux != NULL){
+                    aux = *sharedaux;
+                }
+                other_poses.push_back(aux);
+            }
+            f_dist = 0.0;
+            fiducial_status = 1;
+        }
+    }
+
+}
+
 void ros_pose_CallBack(nav_msgs::Odometry pose){   // wait for the first map
     bool goal_published;
+    r_pose = pose;
     // if(robot_topic.compare("robot_0") == 0 && r_map.map.info.resolution > 0){
     if(r_map.map.info.resolution > 0){
         tf::StampedTransform transform;
@@ -107,15 +160,20 @@ void ros_pose_CallBack(nav_msgs::Odometry pose){   // wait for the first map
             ROS_ERROR("%s",ex.what());
         }
 
-        m_pose = odom2map(&pose, &r_map, &transform, robot_topic);
+        m_pose = odom2map(&pose, &r_map);
 
         // saveMapPose(m_pose, robot_topic);
         // saveOdomPose(o_pose, robot_topic);
-        if(goal_status > 2){
+        if(goal_status > 2 || fiducial_status == 1){
             // goal_status = 99;
             goal_status = 0;
             // // save_map_pose(r_map, m_pose, robot_topic, map_pose_count++);
-            goal_published = setNewGoal(&r_map, pose, m_pose, alpha, beta, gama1, gama2, gama3, "move_base/make_plan", goal_pub, robot_radius, n_size, sigma);
+            if (fiducial_status == 1){
+                fiducial_status = 0;
+            } else {
+                other_poses.clear();
+            }
+            goal_published = setNewGoal(&r_map, pose, m_pose, other_poses, alpha, beta, gama1, gama2, gama3, "move_base/make_plan", goal_pub, robot_radius, n_size, sigma);
             save_map_pose(r_map, m_pose, robot_topic, map_pose_count++);
             // goal_published = false;
             if(goal_published == false){
@@ -162,6 +220,7 @@ int main( int argc, char* argv[] )
     n_.getParam("occ_map_topic", occ_map_topic);
     n_.getParam("goal_topic", goal_topic);
     n_.getParam("pose_topic", pose_topic);
+    n_.getParam("fiducial_topic", fiducial_topic);
     // n_.getParam("cmd_vel_topic", cmd_vel_topic);
     // n_.getParam("laser_topic", laser_topic);
     // n_.getParam("goal_status_topic", goal_status_topic);
@@ -187,6 +246,7 @@ int main( int argc, char* argv[] )
 
     map_sub = n.subscribe(occ_map_topic, 1, ros_map_Callback);
     pose_sub = n.subscribe(pose_topic, 1, ros_pose_CallBack);
+    fiducial_sub = n.subscribe(fiducial_topic, 1, ros_fiducial_Callback);
     goal_result_sub = n.subscribe("move_base/result", 1, goal_result_CallBack);
 
 
