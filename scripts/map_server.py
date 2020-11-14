@@ -7,6 +7,7 @@ import numpy as np
 from pioneer3at.msg import OccMap
 from stage_ros.msg import fiducials
 from nav_msgs.msg import OccupancyGrid
+from std_msgs.msg import Float64
 
 
 class MapServer:
@@ -21,11 +22,16 @@ class MapServer:
         self.map_pub = rospy.Publisher('map', OccupancyGrid, queue_size=1)
         
         self.map_sub = rospy.Subscriber('occ_gmapping', OccMap, self.gmappingMap)
+        self.map_entropy = rospy.Subscriber(self.ns_prefix + '/slam_gmapping/entropy', Float64, self.entropyRead)
 
         self.fiducial_sub = rospy.Subscriber('fiducials', fiducials, self.fiducialChecker)
 
         self.fiducials = {}
         self.maps = {}
+        self.entropy = {}
+
+    def entropyRead(self, entropy):
+        self.entropy[self.ns_prefix] = entropy
 
     def gmappingMap(self, gmap):
         self.maps[self.ns_prefix] = gmap
@@ -40,9 +46,33 @@ class MapServer:
         pub_map = aux[self.ns_prefix]
         for item in aux:
             if item != self.ns_prefix:
-                pub_map = self.stichMaps(pub_map, aux[item])
+                pub_map = self.stichMapsEntropy(pub_map, aux[item], item)
         return pub_map
         
+    def stichMapsEntropy(self, pub_map, other_map, item):        
+        height = pub_map.map.info.height
+        width = pub_map.map.info.width
+        entropy_robot = 1.0/self.entropy[self.ns_prefix].data
+        entropy_other = 1.0/self.entropy[item].data
+        weight = entropy_robot + entropy_other
+        for y in range(0,height):
+            for x in range(0,width):
+                t = x + (height - y - 1) * width
+                if other_map.map.data[t] != -1 and pub_map.map.data[t] != -1:
+                    cell_robot = pub_map.data[t]*entropy_robot
+                    cell_other = other_map.data[t]*entropy_other
+                    pub_map.data[t] = (cell_robot + cell_other) / weight
+                
+                    if pub_map.data[t] > 0.25:
+                        pub_map.map.data[t] = 100
+                    else:
+                        pub_map.map.data[t] = 0
+                if pub_map.map.data[t] == -1:
+                    pub_map.map.data[t] = other_map.map.data[t]
+                    pub_map.data[t] = other_map.data[t]
+
+        return pub_map
+
     def stichMaps(self, pub_map, other_map):        
         height = pub_map.map.info.height
         width = pub_map.map.info.width
@@ -107,6 +137,7 @@ class MapServer:
             robot_prefix = '/robot_' + str(fiducial.id - 1)
             self.fiducials[robot_prefix] = fiducial
             self.maps[robot_prefix] = rospy.wait_for_message(robot_prefix + '/occ_gmapping', OccMap)
+            self.entropy[robot_prefix] = rospy.wait_for_message(robot_prefix + '/slam_gmapping/entropy', Float64)
 
 def main(args):
     rospy.init_node('map_server', anonymous=False, log_level=rospy.INFO)

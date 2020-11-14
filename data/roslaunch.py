@@ -64,14 +64,15 @@ def main(config):
         for alpha, beta, n_size, sigma in zip(specs['alpha'], specs['beta'], specs['n_size'], specs['sigma']):
             for run in range(0,10):
                 config_dir = str(pathlib.Path().absolute()) + '/files/' + config.split('.')[0] + '/'
-                target_dir = config_dir + str(specs['n_robot']) + '_' + str(alpha) + '_' + str(beta) + '_' + str(n_size) + '_' + str(sigma) + '_' + str(run) + '/'
+                target_dir = config_dir + str(n_robot) + '_' + str(alpha) + '_' + str(beta) + '_' + str(n_size) + '_' + str(sigma) + '_' + str(run) + '/'
+                
                 code = -1
                 if not os.path.exists(target_dir):
                     print(target_dir)
                     code = run_roslaunch(n_robot, world_file, alpha, beta, specs['gama1'], specs['gama2'], specs['gama3'], n_size, sigma)
                 else:
                     maps = [f for f in glob.glob(target_dir + "/*.png")]
-                    if len(maps) <= 1:
+                    if len(maps) <= n_robot:
                         print(target_dir)
                         fl = glob.glob(target_dir + "*")
                         for f in fl:
