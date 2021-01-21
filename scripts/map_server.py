@@ -46,6 +46,7 @@ class MapServer:
         pub_map = aux[self.ns_prefix]
         for item in aux:
             if item != self.ns_prefix:
+                # pub_map = self.stichMaps(pub_map, aux[item])
                 pub_map = self.stichMapsEntropy(pub_map, aux[item], item)
         return pub_map
         

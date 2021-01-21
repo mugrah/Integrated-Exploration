@@ -1,0 +1,109 @@
+include "turtlebot.inc"
+
+define floorplan model
+(
+  # sombre, sensible, artistic
+  color "gray30"
+
+  # most maps will need a bounding box
+  boundary 1
+
+  gui_nose 0
+  gui_grid 1
+  gui_move 0
+  gui_outline 0
+  gripper_return 0
+  fiducial_return 0
+  laser_return 1
+)
+
+resolution 0.02 
+
+interval_sim 100  # milliseconds per update step
+
+
+# configure the GUI window
+window
+( 
+  size [ 600.000 600.000 ] 
+  center [0.0 0.0]
+  rotate [0.0 0.0] 
+  scale 20
+  show_data 1
+)
+
+# load an environment bitmap
+floorplan
+(	
+  bitmap "bitmaps/autolab.png"
+  size [20.000 20.000 0.500]
+  pose [0.000 0.000 0.000 0.000]
+  boundary 1
+  name "lab"
+)
+
+# spawn robots
+turtlebot
+(
+  pose [ 0.0 -2.0 0.0 0.0 ]
+  name "r0"
+  color "black"
+  fiducial_return 1
+  fiducial_key 10
+)
+
+# spawn robots
+turtlebot
+(
+  pose [ -8.0 8.0 0.0 0.0 ]
+  name "r1"
+  color "red"
+  fiducial_return 2
+  fiducial_key 10
+)
+
+# spawn robots
+turtlebot
+(
+  pose [ 3.0 7.0 0.0 0.0 ]
+  name "r2"
+  color "green"
+  fiducial_return 3
+  fiducial_key 10
+)
+
+turtlebot
+(
+  pose [ -2.0 8.0 0.0 0.0 ]
+  name "r3"
+  color "blue"
+  fiducial_return 4
+  fiducial_key 10
+)
+
+turtlebot
+(
+  pose [ -8.0 -2.0 0.0 0.0 ]
+  name "r3"
+  color "yellow"
+  fiducial_return 4
+  fiducial_key 10
+)
+
+turtlebot
+(
+  pose [ 8.0 -4.0 0.0 0.0 ]
+  name "r5"
+  color "black"
+  fiducial_return 6
+  fiducial_key 10
+)
+
+turtlebot
+(
+  pose [ 3.0 3.0 0.0 0.0 ]
+  name "r6"
+  color "green"
+  fiducial_return 7
+  fiducial_key 10
+)
