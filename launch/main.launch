@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <launch>
-    <arg name="world_file" default="$(find pioneer3at)/world/exploration_1.world"/>
+    <arg name="world_file" default="$(find pioneer3at)/world/autolab_8.world"/>
     <arg name="rviz" default="false"/>
     <arg name="robot0" default="false" />
     <arg name="robot1" default="false" />

@@ -9,7 +9,7 @@ import os
 import shutil
 import glob
 
-ALPHA = [3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]
+ALPHA = [2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]
 BETA = [2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]
 N_SIZE = range(1, 10, 2)
 SIGMA = [0.1, 0.3, 0.5, 0.7, 0.9]
@@ -61,7 +61,7 @@ def main(config):
     if specs['sigma'] == -1:
         specs['sigma'] = SIGMA
     for n_robot, world_file in zip(specs['n_robot'], specs['world']):
-        for alpha, beta, n_size, sigma in zip(specs['alpha'], specs['beta'], specs['n_size'], specs['sigma']):
+        for alpha, beta, n_size, sigma in zip(specs['alpha'], specs['beta'],specs['n_size'], specs['sigma']):
             for run in range(0,10):
                 config_dir = str(pathlib.Path().absolute()) + '/files/' + config.split('.')[0] + '/'
                 target_dir = config_dir + str(n_robot) + '_' + str(alpha) + '_' + str(beta) + '_' + str(n_size) + '_' + str(sigma) + '_' + str(run) + '/'
@@ -81,7 +81,7 @@ def main(config):
                         
                 if code == 0:
                     finish_run(config, n_robot, alpha, beta, n_size, sigma, run)
-    
+
 
 if __name__ == "__main__":
     parser = OptionParser()

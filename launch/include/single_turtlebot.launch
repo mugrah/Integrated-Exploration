@@ -98,7 +98,7 @@
   <arg name="urdf_file" default="$(find xacro)/xacro --inorder '$(find pioneer3at)/urdf/kobuki_hexagons_r200.urdf.xacro'"/>
   <param name="robot_description" command="$(arg urdf_file)"/>
 
-  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"/>
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" required="true" />
 
   <!-- ******* Save the path made ******* -->
   <node name="path_saver" pkg="pioneer3at" type="traveled_distance.py" output="screen" >
